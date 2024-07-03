@@ -16,7 +16,7 @@ class Groups(
     fun loadAll(): CompletableFuture<List<Group>> {
         return CompletableFuture
             .supplyAsync{
-                Log.i("GroupLoad", "Starting to retretive groups")
+                Log.i("GroupLoad", "Starting to retretive groups from $baseUrl/group")
                 Fuel.get("${baseUrl}/group")
                     .response { _ -> Unit}
                     .join()
