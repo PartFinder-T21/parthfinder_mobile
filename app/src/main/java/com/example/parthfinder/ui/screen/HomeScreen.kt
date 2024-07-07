@@ -38,9 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.example.myapplication.config.Config
-import com.example.parthfinder.api.Group
+import com.example.parthfinder.repository.Group
 import com.example.parthfinder.api.Groups
-import com.example.parthfinder.api.Player
+import com.example.parthfinder.repository.Player
 
 
 @Composable

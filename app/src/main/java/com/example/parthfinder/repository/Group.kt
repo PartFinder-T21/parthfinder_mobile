@@ -1,4 +1,4 @@
-package com.example.parthfinder.api
+package com.example.parthfinder.repository
 
 data class Group(
     val groupCode: String?= "",

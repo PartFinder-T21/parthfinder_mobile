@@ -1,9 +1,9 @@
 package com.example.parthfinder.api
 
 import android.util.Log
-import com.example.parthfinder.api.Group
-import com.example.parthfinder.api.Message
-import com.example.parthfinder.api.Player
+import com.example.parthfinder.repository.Group
+import com.example.parthfinder.repository.Message
+import com.example.parthfinder.repository.Player
 import com.github.kittinunf.fuel.Fuel
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
