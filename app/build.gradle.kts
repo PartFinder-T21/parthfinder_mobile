@@ -69,5 +69,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.material)
     implementation(libs.gson)
+    implementation(libs.gson.v286)
     implementation(libs.fuel)
 }
