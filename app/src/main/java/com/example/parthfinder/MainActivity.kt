@@ -1,11 +1,9 @@
 package com.example.parthfinder
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,24 +21,24 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.config.Config
 import com.example.parthfinder.api.Groups
+import com.example.parthfinder.api.Access
 import com.example.parthfinder.theme.ParthFinderTheme
 import com.example.parthfinder.ui.screen.CampainScreen
-import com.example.parthfinder.ui.screen.CharactersScreen
 import com.example.parthfinder.ui.screen.HomeScreen
+import com.example.parthfinder.ui.screen.LoginScreen
 
 class MainActivity : ComponentActivity() {
 
     val config = Config()
     val groups = Groups(config.baseUrl)
+    val access = Access(config.baseUrl)
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +70,7 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxWidth()
                         ) {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
-                            composable(MainRoute.Characters.name) { CharactersScreen() }
+                            composable(MainRoute.Characters.name) { LoginScreen(access) }
                             composable(MainRoute.Campains.name) { CampainScreen() }
                         }
                     }
