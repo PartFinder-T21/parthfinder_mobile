@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.parthfinder"
-        minSdk = 24
+        minSdk = 34
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -69,5 +69,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.material)
     implementation(libs.gson)
+    implementation(libs.gson.v286)
     implementation(libs.fuel)
 }
