@@ -21,6 +21,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -31,6 +32,7 @@ import com.example.parthfinder.api.Groups
 import com.example.parthfinder.api.Access
 import com.example.parthfinder.theme.ParthFinderTheme
 import com.example.parthfinder.ui.screen.CampainScreen
+import com.example.parthfinder.ui.screen.CharactersScreen
 import com.example.parthfinder.ui.screen.HomeScreen
 import com.example.parthfinder.ui.screen.LoginScreen
 
@@ -62,7 +64,9 @@ class MainActivity : ComponentActivity() {
                     bottomBar = { Navbar(navBarController) }
 
                 ){ innerpadding ->
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize().padding(innerpadding)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerpadding)) {
                         NavHost(
                             navController = navBarController,
                             startDestination = MainRoute.Home.name,
@@ -70,8 +74,8 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxWidth()
                         ) {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
-                            composable(MainRoute.Characters.name) { LoginScreen(access) }
-                            composable(MainRoute.Campains.name) { CampainScreen() }
+                            composable(MainRoute.Characters.name) { CharactersScreen() }
+                            composable(MainRoute.Campains.name) { LoginScreen(access) }
                         }
                     }
                 }
