@@ -1,5 +1,6 @@
 package com.example.parthfinder
 
+import ImagePicker
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -64,7 +65,9 @@ class MainActivity : ComponentActivity() {
                     bottomBar = { Navbar(navBarController) }
 
                 ){ innerpadding ->
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxSize().padding(innerpadding)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerpadding)) {
                         NavHost(
                             navController = navBarController,
                             startDestination = MainRoute.Home.name,
@@ -73,7 +76,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
                             composable(MainRoute.Characters.name) { CharactersScreen() }
-                            composable(MainRoute.Campains.name) { CampainScreen() }
+                            composable(MainRoute.Campains.name) { ImagePicker(context = applicationContext) }
                         }
                     }
                 }
