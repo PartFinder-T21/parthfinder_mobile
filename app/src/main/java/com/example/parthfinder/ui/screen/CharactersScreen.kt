@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import com.example.parthfinder.api.Access
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
 import com.example.parthfinder.repository.Stats
@@ -44,7 +45,7 @@ import com.example.parthfinder.ui.component.CharacterSheet
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Composable
-fun CharactersScreen() {
+fun CharactersScreen(access: Access) {
   val characters = listOf(
     mokkCharacter()
   )
@@ -87,7 +88,7 @@ fun CharacterGrid(characters: List<PFCharacter>) {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center
     ) {
-      CharacterSheet(character = selectedCharacter!!) {selectedCharacter = null}
+      //CharacterSheet(character = selectedCharacter!!) {selectedCharacter = null}
     }
   }
 }

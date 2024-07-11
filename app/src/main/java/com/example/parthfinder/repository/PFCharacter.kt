@@ -18,3 +18,9 @@ data class Stats(
   var wisdom: Int,
   var charisma: Int,
 )
+
+data class Stat(
+  var stat: String,
+  var value: Int
+)
+

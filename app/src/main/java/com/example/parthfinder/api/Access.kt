@@ -3,6 +3,7 @@ package com.example.parthfinder.api
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.Response
@@ -20,9 +21,6 @@ class Access(
 ) {
 
     fun login(context: Context, username: String, password: String): CompletableFuture<String> {
-        val headers = JSONObject().apply {
-            put("Content-Type", "application/json")
-        }
         val jsonBody = JSONObject().apply {
             put("input", username)
             put("password", password)
@@ -35,7 +33,6 @@ class Access(
             try {
                 withTimeout(15000) {
                     Log.i("Login", "Trying to log in $baseUrl/user/login")
-                    Log.i("Login", "Headers: $headers")
                     Log.i("Login", "Body: $jsonBody")
 
                     val (_, response, result) = Fuel.post("${baseUrl}/user/login")

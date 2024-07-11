@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -22,9 +23,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -47,6 +56,7 @@ class MainActivity : ComponentActivity() {
     val groups = Groups(config.baseUrl)
     val access = Access(config.baseUrl)
 
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +73,18 @@ class MainActivity : ComponentActivity() {
                             ),
                             title = {
                                 Text("ParthFinder")
+                            },
+                            actions = {
+                                IconButton(onClick = {
+                                    // Logica per cambiare schermo
+                                    navBarController.navigate(MainRoute.Login.name)
+                                }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.account_no_shadow),
+                                        contentDescription = "account",
+                                        modifier = Modifier.shadow(0.dp)
+                                    )
+                                }
                             }
                         )
                     },
@@ -79,9 +101,10 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxWidth()
                         ) {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
-                            composable(MainRoute.Characters.name) { CharactersScreen() }
+                            composable(MainRoute.Characters.name) { CharactersScreen(access) }
                             composable(MainRoute.Campains.name) { ImagePicker(context = applicationContext) }
-                            //composable(MainRoute.Campains.name) { LoginScreen(access) }
+                            composable(MainRoute.Login.name) { LoginScreen(access) }
+
                         }
                     }
                 }
@@ -101,7 +124,16 @@ fun Navbar(navBarController: NavHostController)
         NavigationBarItem(
             label = { Text(text = "Campagne") },
             selected = false,
-            onClick = { navBarController.navigate(MainRoute.Campains.name) },
+            onClick = { navBarController.navigate(MainRoute.Campains.name)
+                //TODO
+                /*
+                    if (loggedIn) {
+                        navBarController.navigate(MainRoute.Campains.name)
+                    } else {
+                        navBarController.navigate(MainRoute.Login.name)
+                    }
+                */
+            },
             icon = { Icon(modifier = Modifier.fillMaxHeight(0.3f), painter = painterResource(id = R.drawable.campagne_button), contentDescription = "campagne") }
         )
         NavigationBarItem(
@@ -113,7 +145,9 @@ fun Navbar(navBarController: NavHostController)
         NavigationBarItem(
             label = { Text(text = "Personaggi") },
             selected = false,
-            onClick = { navBarController.navigate(MainRoute.Characters.name) },
+            onClick = {
+                navBarController.navigate(MainRoute.Characters.name)
+            },
             icon = { Icon(modifier = Modifier.fillMaxHeight(0.3f), painter = painterResource(id = R.drawable.personaggi_button), contentDescription = "personaggi") }
 
         )
@@ -123,5 +157,6 @@ fun Navbar(navBarController: NavHostController)
 enum class MainRoute {
     Home,
     Characters,
-    Campains
+    Campains,
+    Login
 }
