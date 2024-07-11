@@ -1,9 +1,12 @@
 package com.example.parthfinder
 
+import ImagePicker
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,8 +24,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,6 +39,7 @@ import com.example.parthfinder.ui.screen.CampainScreen
 import com.example.parthfinder.ui.screen.CharactersScreen
 import com.example.parthfinder.ui.screen.HomeScreen
 import com.example.parthfinder.ui.screen.LoginScreen
+import com.google.android.gms.cast.framework.media.ImagePicker
 
 class MainActivity : ComponentActivity() {
 
@@ -75,7 +80,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
                             composable(MainRoute.Characters.name) { CharactersScreen() }
-                            composable(MainRoute.Campains.name) { LoginScreen(access) }
+                            composable(MainRoute.Campains.name) { ImagePicker(context = applicationContext) }
+                            //composable(MainRoute.Campains.name) { LoginScreen(access) }
                         }
                     }
                 }

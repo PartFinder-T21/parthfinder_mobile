@@ -1,21 +1,20 @@
 package com.example.parthfinder.repository
 
-import android.media.Image
-
 data class PFCharacter(
+  val id: String? = null,
   val user: String,
-  val image: String,
-  val name: String,
+  var image: String,
+  var name: String,
   val stats: Stats,
-  val inventory: List<String>,
-  val charaterClass: String,
+  var inventory: List<String>,
+  var characterClass: String,
 )
 
 data class Stats(
-  val strength: Int,
-  val dexterity: Int,
-  val constitution: Int,
-  val intelligence: Int,
-  val wisdom: Int,
-  val charisma: Int,
+  var strength: Int,
+  var dexterity: Int,
+  var constitution: Int,
+  var intelligence: Int,
+  var wisdom: Int,
+  var charisma: Int,
 )
