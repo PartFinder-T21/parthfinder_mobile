@@ -1,14 +1,17 @@
 package com.example.parthfinder.ui.screen
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +20,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,40 +36,70 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import com.example.parthfinder.R
+import com.example.parthfinder.api.Access
 import com.example.parthfinder.api.Characters
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
+import com.example.parthfinder.repository.Stats
 import com.example.parthfinder.ui.component.CharacterSheet
+import com.example.parthfinder.util.imageBitmapFrom
+import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Composable
-fun CharactersScreen(context: Context, characters: Characters) {
+fun CharactersScreen(context: Context, characters: Characters, access: Access) {
 
+  var selectedCharacter by remember { mutableStateOf<PFCharacter?>(null) }
   var characterList by remember {
     mutableStateOf(emptyList<PFCharacter>())
   }
   characters.getCharacters(context).thenApply { list ->
-    characterList = list?: emptyList()
+    characterList = list ?: emptyList()
     Log.i("CHARACTER", "OK")
   }
 
-  Column() {
-    CharacterGrid(characters = characterList, context = context, characterAPI = characters)
+  if (selectedCharacter == null) {
+    Column() {
+      CharacterGrid(characters = characterList) {character -> selectedCharacter = character}
+    }
+    ExtendedFloatingActionButton(
+      modifier = Modifier.background(Color.Blue),
+      onClick = {
+        selectedCharacter = PFCharacter(
+          user = access.getCookiesFromSharedPreferences(context)["name"]!!,
+          image = /*getBase64FromDrawable(context, R.drawable.default_image)*/"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
+          name = "Premi per modificare il nome",
+          characterClass = "Modifica la classe",
+          stats = Stats(10,10,10,10,10,10),
+          inventory = emptyList()
+        )
+        Log.i("Image", selectedCharacter!!.image)
+      },
+      icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
+      text = { Text(text = "Nuovo", color = Color.White)}
+    )
+  }
+  else{
+    Column(
+      modifier = Modifier.fillMaxSize(),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center
+    ) {
+      CharacterSheet(character = selectedCharacter!!, characters = characters, context = context) {selectedCharacter = null}
+    }
   }
 
 }
 
-
 @Composable
-fun CharacterGrid(characters: List<PFCharacter>, context: Context, characterAPI: Characters) {
-  var selectedCharacter by remember { mutableStateOf<PFCharacter?>(null) }
-
-  if (selectedCharacter == null) {
+fun CharacterGrid(characters: List<PFCharacter>, changeSelection: (PFCharacter) -> Unit) {
     Text(
       text = "PERSONAGGI",
       textAlign = TextAlign.Center,
@@ -79,21 +118,11 @@ fun CharacterGrid(characters: List<PFCharacter>, context: Context, characterAPI:
         .fillMaxSize()
     ) {
       items(characters) {
-        Character(it) { character -> selectedCharacter = character }
+        Character(it) { character -> changeSelection(character) }
       }
     }
-  } else {
-    Column(
-      modifier = Modifier.fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center
-    ) {
-      CharacterSheet(character = selectedCharacter!!, characters = characterAPI, context = context) {selectedCharacter = null}
-    }
-  }
 }
 
-@OptIn(ExperimentalEncodingApi::class)
 @Composable
 fun Character(character: PFCharacter, onClick: (PFCharacter) -> Unit) {
   Box(
@@ -106,11 +135,7 @@ fun Character(character: PFCharacter, onClick: (PFCharacter) -> Unit) {
   ) {
     Column {
       Image(
-        bitmap = character.image.let {
-          val encodedImage = Base64.decode(character.image, Base64.DEFAULT)
-          Log.i("B64", encodedImage.toString())
-          BitmapFactory.decodeByteArray(encodedImage, 0, encodedImage.size).asImageBitmap()
-        },
+        bitmap = imageBitmapFrom(character.image),
         contentDescription = "Immagine personaggio",
         modifier = Modifier.clip(CircleShape)
       )
@@ -121,5 +146,13 @@ fun Character(character: PFCharacter, onClick: (PFCharacter) -> Unit) {
       )
     }
   }
+}
+
+fun getBase64FromDrawable(context: Context, drawableId: Int): String {
+  val bitmap = BitmapFactory.decodeResource(context.resources, drawableId)
+  val byteArrayOutputStream = ByteArrayOutputStream()
+  bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+  val byteArray = byteArrayOutputStream.toByteArray()
+  return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
 

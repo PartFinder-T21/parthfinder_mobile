@@ -218,14 +218,6 @@ fun LoginScreen(access: Access) {
                     }
                 )
             }
-
-
-
-
-
-
-
-
             Surface(
                 modifier = Modifier.padding(16.dp),
                 color = MaterialTheme.colorScheme.surface

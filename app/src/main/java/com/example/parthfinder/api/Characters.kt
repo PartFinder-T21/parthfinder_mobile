@@ -8,6 +8,7 @@ import com.example.parthfinder.repository.Stat
 import com.example.parthfinder.repository.Stats
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.Headers
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.HashMap
 import java.util.concurrent.CompletableFuture
@@ -33,29 +35,20 @@ class Characters(val baseUrl: String, val access: Access) {
       future.complete("false")
       return future
     }
-    val strength = JSONObject().apply {
-      put("strength",character.stats.strength)
-    }
-    val constitution = JSONObject().apply {
-      put("constitution",character.stats.constitution)
-    }
-    val intelligence = JSONObject().apply {
-      put("intelligence",character.stats.intelligence)
-    }
-    val wisdom = JSONObject().apply {
-      put("wisdom",character.stats.wisdom)
-    }
-    val charisma = JSONObject().apply {
-      put("charisma",character.stats.charisma)
-    }
-    val stats = arrayOf(strength,constitution,intelligence,wisdom,charisma)
+    val jsonStats = JSONArray()
+      .put(JSONObject().put("stat", "strength").put("value", character.stats.strength))
+      .put(JSONObject().put("stat", "dexterity").put("value", character.stats.dexterity))
+      .put(JSONObject().put("stat", "constitution").put("value", character.stats.constitution))
+      .put(JSONObject().put("stat", "intelligence").put("value", character.stats.intelligence))
+      .put(JSONObject().put("stat", "wisdom").put("value", character.stats.wisdom))
+      .put(JSONObject().put("stat", "charisma").put("value", character.stats.charisma))
 
     val jsonBody = JSONObject().apply {
       put("name", character.name)
       put("image", character.image)
       put("class", character.characterClass)
-      put("stats", stats)
-      put("inventory",character.inventory.toTypedArray())
+      put("stats", jsonStats)
+      put("inventory",character.inventory)
     }.toString()
     // Avvio di una coroutine per la chiamata
     CoroutineScope(Dispatchers.IO).launch {
@@ -66,7 +59,7 @@ class Characters(val baseUrl: String, val access: Access) {
 
           val (_, response, result) = Fuel.post("${baseUrl}/character")
             .header(Headers.CONTENT_TYPE, "application/json")
-            .header(Headers.AUTHORIZATION, "$tk")
+            .header(Headers.COOKIE, "tk=$tk")
             .body(jsonBody)
             .response()
 

@@ -183,7 +183,6 @@ fun CharacterSheetFrontSize(character: PFCharacter) {
 @Composable
 fun CharacterSheetBackSize(character: PFCharacter) {
   var inventory by remember { mutableStateOf(inventoryToString(character.inventory)) }
-  val keyboardController = LocalSoftwareKeyboardController.current
   Column(
     modifier = Modifier
       .fillMaxWidth()
@@ -258,14 +257,15 @@ fun StatBlock(name: String, value: String, stats: Stats) {
     TextField(
       value = stat,
       onValueChange = { number ->
-        stat = number
+        if(number == "") {stat = "0"}
+        else { stat = number}
         when (name) {
-          "Str" -> stats.strength = number.toInt()
-          "Dex" -> stats.dexterity = number.toInt()
-          "Con" -> stats.constitution = number.toInt()
-          "Int" -> stats.intelligence = number.toInt()
-          "Wis" -> stats.wisdom = number.toInt()
-          "Cha" -> stats.charisma = number.toInt()
+          "Str" -> stats.strength = stat.toInt()
+          "Dex" -> stats.dexterity = stat.toInt()
+          "Con" -> stats.constitution = stat.toInt()
+          "Int" -> stats.intelligence = stat.toInt()
+          "Wis" -> stats.wisdom = stat.toInt()
+          "Cha" -> stats.charisma = stat.toInt()
         }
       },
       keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
