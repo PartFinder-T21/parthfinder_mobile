@@ -2,6 +2,7 @@ package com.example.parthfinder.api
 
 import android.content.Context
 import android.util.Log
+import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
 import com.example.parthfinder.repository.Stat
 import com.example.parthfinder.repository.Stats
@@ -90,8 +91,9 @@ class Characters(val baseUrl: String, val access: Access) {
     return future
   }
 
-  fun getCharacters(character: PFCharacter, context: Context) : CompletableFuture<List<PFCharacter>?> {
+  fun getCharacters(context: Context) : CompletableFuture<List<PFCharacter>?> {
     val cookies = access.getCookiesFromSharedPreferences(context);
+    Log.i("COOKIE", cookies.toString())
     val tk = cookies["tk"];
     val future = CompletableFuture<List<PFCharacter>?>();
     if(cookies.all { a -> a.value == null }){
@@ -105,10 +107,12 @@ class Characters(val baseUrl: String, val access: Access) {
         withTimeout(15000) {
           Log.i("Character", "Trying get character $baseUrl/character")
 
-          val (_, response, result) = Fuel.post("${baseUrl}/character")
+          val (request, response, result) = Fuel.get("${baseUrl}/character")
             .header(Headers.CONTENT_TYPE, "application/json")
-            .header(Headers.AUTHORIZATION, "$tk")
+            .header(Headers.COOKIE, "tk=$tk")
             .response()
+
+          Log.i("REQUEST", request.toString())
 
           Log.i("Character", "Received response. Status code is ${response.statusCode}")
 
@@ -116,7 +120,8 @@ class Characters(val baseUrl: String, val access: Access) {
             Log.i("Character", "Got $response")
 
             //TODO: indeciso sul parsing del body risposta
-            val retVal = JsonParser.parseString(String(response.data)).asJsonArray.map { mapCharacter(it.asJsonObject) }
+            val retVal = JsonParser.parseString(String(response.data)).asJsonObject.get("data").asJsonArray.map { mapCharacter(it.asJsonObject) }
+            Log.i("CHARACTER",retVal.toString())
             future.complete(retVal)
           } else {
             Log.e("Character", "Error: ${result.component2()?.response}")
@@ -132,6 +137,10 @@ class Characters(val baseUrl: String, val access: Access) {
       }
     }
     return future
+  }
+
+  fun editCharacter(character: PFCharacter, context: Context){
+    TODO()
   }
 
   fun mapCharacter(json: JsonObject): PFCharacter {

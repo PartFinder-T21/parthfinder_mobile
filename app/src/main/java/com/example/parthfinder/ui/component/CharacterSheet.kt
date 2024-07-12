@@ -62,7 +62,7 @@ import com.example.parthfinder.repository.Stats
 import java.io.ByteArrayOutputStream
 
 @Composable
-fun CharacterSheet(characters: Characters, character: PFCharacter, close: () -> Unit) {
+fun CharacterSheet(characters: Characters, character: PFCharacter, context: Context, close: () -> Unit) {
   var sheetState by remember { mutableStateOf(true) }
   var testoCambiaPagina by remember { mutableStateOf("Inventario") }
   Card(
@@ -89,7 +89,12 @@ fun CharacterSheet(characters: Characters, character: PFCharacter, close: () -> 
       }
       Spacer(modifier = Modifier.fillMaxWidth(0.3f))
       Button(onClick = {
-        characters.upsert(character)
+        if(character.id == null){
+          characters.newCharacter(character, context)
+        }
+        else{
+          characters.editCharacter(character, context)
+        }
       }) {
         Text(text = "Salva")
       }

@@ -1,16 +1,14 @@
 package com.example.parthfinder.ui.screen
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,45 +17,47 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import com.example.parthfinder.api.Access
+import com.example.parthfinder.api.Characters
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
-import com.example.parthfinder.repository.Stats
 import com.example.parthfinder.ui.component.CharacterSheet
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Composable
-fun CharactersScreen(access: Access) {
-  val characters = listOf(
-    mokkCharacter()
-  )
+fun CharactersScreen(context: Context, characters: Characters) {
+
+  var characterList by remember {
+    mutableStateOf(emptyList<PFCharacter>())
+  }
+  characters.getCharacters(context).thenApply { list ->
+    characterList = list?: emptyList()
+    Log.i("CHARACTER", "OK")
+  }
+
   Column() {
-    CharacterGrid(characters = characters)
+    CharacterGrid(characters = characterList, context = context, characterAPI = characters)
   }
 
 }
 
 
 @Composable
-fun CharacterGrid(characters: List<PFCharacter>) {
+fun CharacterGrid(characters: List<PFCharacter>, context: Context, characterAPI: Characters) {
   var selectedCharacter by remember { mutableStateOf<PFCharacter?>(null) }
 
   if (selectedCharacter == null) {
@@ -88,7 +88,7 @@ fun CharacterGrid(characters: List<PFCharacter>) {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center
     ) {
-      //CharacterSheet(character = selectedCharacter!!) {selectedCharacter = null}
+      CharacterSheet(character = selectedCharacter!!, characters = characterAPI, context = context) {selectedCharacter = null}
     }
   }
 }
