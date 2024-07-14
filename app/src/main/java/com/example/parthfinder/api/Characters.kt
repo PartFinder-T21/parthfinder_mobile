@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
 import com.example.parthfinder.repository.Stat
+import com.example.parthfinder.util.toJson
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.Headers
 import com.google.gson.JsonObject
@@ -17,15 +18,34 @@ import kotlinx.coroutines.withTimeout
 import org.json.JSONObject
 import java.util.concurrent.CompletableFuture
 
-class Characters(val baseUrl: String, val access: AuthAPI) {
+
+interface Characters{
+  fun newCharacter(character: PFCharacter, context: Context) : CompletableFuture<String>
+  fun getCharacters(context: Context) : CompletableFuture<List<PFCharacter>?>
+  fun editCharacter(character: PFCharacter, context: Context): CompletableFuture<Unit>
+  fun deleteCharacter(character: PFCharacter, context: Context): CompletableFuture<Unit>
+}
+
+class CharactersAPI(val baseUrl: String, val access: AuthAPI): Characters {
 
   fun upsert(character: PFCharacter){
 
   }
 
-  fun newCharacter(character: PFCharacter, context: Context) : CompletableFuture<String> {
+  override fun newCharacter(character: PFCharacter, context: Context) : CompletableFuture<String> {
     val cookies = access.getCookiesFromSharedPreferences(context);
     val tk = cookies["tk"];
+    val characterBody = toJson(character)
+
+    return CompletableFuture
+      .supplyAsync{
+        Fuel.post("${baseUrl}/character")
+          .header(Headers.CONTENT_TYPE, "application/json")
+          .header(Headers.COOKIE, "tk=${cookies["tk"]}")
+          .body(characterBody)
+          .response()
+      }
+
     val future = CompletableFuture<String>();
     if(cookies.all { a -> a.value == null }){
       future.complete("false")
@@ -80,9 +100,12 @@ class Characters(val baseUrl: String, val access: AuthAPI) {
     return future
   }
 
-  fun getCharacters(context: Context) : CompletableFuture<List<PFCharacter>?> {
+  override fun getCharacters(context: Context) : CompletableFuture<List<PFCharacter>?> {
     val cookies = access.getCookiesFromSharedPreferences(context);
     Log.i("COOKIE", cookies.toString())
+
+
+
     val tk = cookies["tk"];
     val future = CompletableFuture<List<PFCharacter>?>();
     if(cookies.all { a -> a.value == null }){
@@ -128,14 +151,13 @@ class Characters(val baseUrl: String, val access: AuthAPI) {
     return future
   }
 
-  /*fun editCharacter(character: PFCharacter, context: Context): CompletableFuture<Unit>{
-    val token  = access.getCookiesFromSharedPreferences(context);
+  override fun editCharacter(character: PFCharacter, context: Context): CompletableFuture<Unit>{
+    /*val token  = access.getCookiesFromSharedPreferences(context);
     return CompletableFuture
       .supplyAsync {
         Fuel.put("${baseUrl}/character")
           .header(Headers.CONTENT_TYPE, "application/json")
           .header(Headers.COOKIE, "tk=${token["tk"]}")
-          .response()
           .response { _ -> Unit}
           .join()
           .let { response ->
@@ -150,8 +172,13 @@ class Characters(val baseUrl: String, val access: AuthAPI) {
 
             JsonParser.parseString(it).asJsonObject.get("data").asJsonArray.map { mapGroup(it.asJsonObject) }
           }
-      }
-  }*/
+      }*/
+    return CompletableFuture.completedFuture(Unit)
+  }
+
+  override fun deleteCharacter(character: PFCharacter, context: Context): CompletableFuture<Unit> {
+    TODO("Not yet implemented")
+  }
 
 
   fun mapCharacter(json: JsonObject): PFCharacter {
