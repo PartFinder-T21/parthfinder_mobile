@@ -12,12 +12,8 @@ import java.util.concurrent.CompletableFuture
 interface Auth {
 
   fun login(context: Context, username: String, password: String): CompletableFuture<Int>
-  fun register(
-    context: Context,
-    username: String,
-    email: String,
-    password: String
-  ): CompletableFuture<Int>
+  fun register(context: Context, username: String, email: String, password: String): CompletableFuture<Int>
+
 }
 
 class AuthAPI(private val baseUrl: String) : Auth {
