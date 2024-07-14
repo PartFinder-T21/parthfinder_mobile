@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -57,8 +56,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.example.parthfinder.api.Characters
+import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
-import com.example.parthfinder.repository.Stats
+import com.example.parthfinder.repository.Stat
 import java.io.ByteArrayOutputStream
 
 @Composable
@@ -93,7 +93,7 @@ fun CharacterSheet(characters: Characters, character: PFCharacter, context: Cont
           characters.newCharacter(character, context)
         }
         else{
-          characters.editCharacter(character, context)
+          //characters.editCharacter(character, context)
         }
       }) {
         Text(text = "Salva")
@@ -175,7 +175,7 @@ fun CharacterSheetFrontSize(character: PFCharacter) {
       ),
       singleLine = true
     )
-    StatsGrid(character.stats)
+    //StatsGrid(character.stats)
   }
 }
 
@@ -216,17 +216,17 @@ fun CharacterSheetBackSize(character: PFCharacter) {
 
 
 @Composable
-fun StatsGrid(statistics: Stats) {
+fun StatsGrid(statistics: Stat) {
   val keyboardManager = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
-  val stats = listOf(
-    "Str" to statistics.strength.toString(),
-    "Dex" to statistics.dexterity.toString(),
-    "Con" to statistics.constitution.toString(),
-    "Int" to statistics.intelligence.toString(),
-    "Wis" to statistics.wisdom.toString(),
-    "Cha" to statistics.charisma.toString()
-  )
+  val stats = mokkCharacter(
+    //"Str" to statistics.strength.toString(),
+    //"Dex" to statistics.dexterity.toString(),
+    //"Con" to statistics.constitution.toString(),
+    //"Int" to statistics.intelligence.toString(),
+    //"Wis" to statistics.wisdom.toString(),
+    //"Cha" to statistics.charisma.toString()
+  ).stats
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
     modifier = Modifier
@@ -241,14 +241,14 @@ fun StatsGrid(statistics: Stats) {
             focusManager.clearFocus()
           }
       ) {
-        StatBlock(name = it.first, value = it.second, statistics)
+       // StatBlock(name = it.first, value = it.second, statistics)
       }
     }
   }
 }
 
 @Composable
-fun StatBlock(name: String, value: String, stats: Stats) {
+fun StatBlock(name: String, value: String, stats: Stat) {
   Row(
     modifier = Modifier.fillMaxSize(),
     verticalAlignment = Alignment.CenterVertically
@@ -259,14 +259,14 @@ fun StatBlock(name: String, value: String, stats: Stats) {
       onValueChange = { number ->
         if(number == "") {stat = "0"}
         else { stat = number}
-        when (name) {
-          "Str" -> stats.strength = stat.toInt()
+        /*when (name) {
+          /*"Str" -> stats.strength = stat.toInt()
           "Dex" -> stats.dexterity = stat.toInt()
           "Con" -> stats.constitution = stat.toInt()
           "Int" -> stats.intelligence = stat.toInt()
           "Wis" -> stats.wisdom = stat.toInt()
-          "Cha" -> stats.charisma = stat.toInt()
-        }
+          "Cha" -> stats.charisma = stat.toInt()*/
+        }*/
       },
       keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
       modifier = Modifier

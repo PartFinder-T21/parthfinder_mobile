@@ -2,21 +2,12 @@ package com.example.parthfinder.repository
 
 data class PFCharacter(
   val id: String? = null,
-  val user: String,
+  val user: String? = null,
   var image: String,
   var name: String,
-  val stats: Stats,
+  val stats: List<Stat>,
   var inventory: List<String>,
   var characterClass: String,
-)
-
-data class Stats(
-  var strength: Int,
-  var dexterity: Int,
-  var constitution: Int,
-  var intelligence: Int,
-  var wisdom: Int,
-  var charisma: Int,
 )
 
 data class Stat(

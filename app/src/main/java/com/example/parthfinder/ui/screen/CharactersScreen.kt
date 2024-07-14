@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,15 +20,12 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,24 +33,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import com.example.parthfinder.R
-import com.example.parthfinder.api.Access
+import com.example.parthfinder.api.AuthAPI
 import com.example.parthfinder.api.Characters
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
-import com.example.parthfinder.repository.Stats
 import com.example.parthfinder.ui.component.CharacterSheet
 import com.example.parthfinder.util.imageBitmapFrom
 import java.io.ByteArrayOutputStream
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Composable
-fun CharactersScreen(context: Context, characters: Characters, access: Access) {
+fun CharactersScreen(context: Context, characters: Characters, access: AuthAPI) {
 
   var selectedCharacter by remember { mutableStateOf<PFCharacter?>(null) }
   var characterList by remember {
@@ -67,7 +59,7 @@ fun CharactersScreen(context: Context, characters: Characters, access: Access) {
 
   if (selectedCharacter == null) {
     Column() {
-      CharacterGrid(characters = characterList) {character -> selectedCharacter = character}
+      CharacterGrid(characters = characterList) { character -> selectedCharacter = character }
     }
     ExtendedFloatingActionButton(
       modifier = Modifier.background(Color.Blue),
@@ -77,22 +69,25 @@ fun CharactersScreen(context: Context, characters: Characters, access: Access) {
           image = /*getBase64FromDrawable(context, R.drawable.default_image)*/"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
           name = "Premi per modificare il nome",
           characterClass = "Modifica la classe",
-          stats = Stats(10,10,10,10,10,10),
+          stats = mokkCharacter().stats,
           inventory = emptyList()
         )
         Log.i("Image", selectedCharacter!!.image)
       },
       icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
-      text = { Text(text = "Nuovo", color = Color.White)}
+      text = { Text(text = "Nuovo", color = Color.White) }
     )
-  }
-  else{
+  } else {
     Column(
       modifier = Modifier.fillMaxSize(),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center
     ) {
-      CharacterSheet(character = selectedCharacter!!, characters = characters, context = context) {selectedCharacter = null}
+      CharacterSheet(
+        character = selectedCharacter!!,
+        characters = characters,
+        context = context
+      ) { selectedCharacter = null }
     }
   }
 
@@ -100,27 +95,27 @@ fun CharactersScreen(context: Context, characters: Characters, access: Access) {
 
 @Composable
 fun CharacterGrid(characters: List<PFCharacter>, changeSelection: (PFCharacter) -> Unit) {
-    Text(
-      text = "PERSONAGGI",
-      textAlign = TextAlign.Center,
-      textDecoration = TextDecoration.Underline,
-      fontSize = 8.em,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(0.dp, 20.dp, 0.dp, 0.dp)
-    )
-    LazyVerticalGrid(
-      columns = GridCells.Fixed(3),
-      horizontalArrangement = Arrangement.Center,
-      verticalArrangement = Arrangement.Top,
-      modifier = Modifier
-        .padding(20.dp)
-        .fillMaxSize()
-    ) {
-      items(characters) {
-        Character(it) { character -> changeSelection(character) }
-      }
+  Text(
+    text = "PERSONAGGI",
+    textAlign = TextAlign.Center,
+    textDecoration = TextDecoration.Underline,
+    fontSize = 8.em,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(0.dp, 20.dp, 0.dp, 0.dp)
+  )
+  LazyVerticalGrid(
+    columns = GridCells.Fixed(3),
+    horizontalArrangement = Arrangement.Center,
+    verticalArrangement = Arrangement.Top,
+    modifier = Modifier
+      .padding(20.dp)
+      .fillMaxSize()
+  ) {
+    items(characters) {
+      Character(it) { character -> changeSelection(character) }
     }
+  }
 }
 
 @Composable
@@ -155,4 +150,3 @@ fun getBase64FromDrawable(context: Context, drawableId: Int): String {
   val byteArray = byteArrayOutputStream.toByteArray()
   return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
-

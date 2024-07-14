@@ -5,10 +5,8 @@ import android.util.Log
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
 import com.example.parthfinder.repository.Stat
-import com.example.parthfinder.repository.Stats
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.Headers
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
@@ -16,12 +14,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import org.json.JSONArray
 import org.json.JSONObject
-import java.util.HashMap
 import java.util.concurrent.CompletableFuture
 
-class Characters(val baseUrl: String, val access: Access) {
+class Characters(val baseUrl: String, val access: AuthAPI) {
 
   fun upsert(character: PFCharacter){
 
@@ -35,19 +31,19 @@ class Characters(val baseUrl: String, val access: Access) {
       future.complete("false")
       return future
     }
-    val jsonStats = JSONArray()
+    /*val jsonStats = JSONArray()
       .put(JSONObject().put("stat", "strength").put("value", character.stats.strength))
       .put(JSONObject().put("stat", "dexterity").put("value", character.stats.dexterity))
       .put(JSONObject().put("stat", "constitution").put("value", character.stats.constitution))
       .put(JSONObject().put("stat", "intelligence").put("value", character.stats.intelligence))
       .put(JSONObject().put("stat", "wisdom").put("value", character.stats.wisdom))
-      .put(JSONObject().put("stat", "charisma").put("value", character.stats.charisma))
+      .put(JSONObject().put("stat", "charisma").put("value", character.stats.charisma))*/
 
     val jsonBody = JSONObject().apply {
       put("name", character.name)
       put("image", character.image)
       put("class", character.characterClass)
-      put("stats", jsonStats)
+      //put("stats", jsonStats)
       put("inventory",character.inventory)
     }.toString()
     // Avvio di una coroutine per la chiamata
@@ -132,9 +128,31 @@ class Characters(val baseUrl: String, val access: Access) {
     return future
   }
 
-  fun editCharacter(character: PFCharacter, context: Context){
-    TODO()
-  }
+  /*fun editCharacter(character: PFCharacter, context: Context): CompletableFuture<Unit>{
+    val token  = access.getCookiesFromSharedPreferences(context);
+    return CompletableFuture
+      .supplyAsync {
+        Fuel.put("${baseUrl}/character")
+          .header(Headers.CONTENT_TYPE, "application/json")
+          .header(Headers.COOKIE, "tk=${token["tk"]}")
+          .response()
+          .response { _ -> Unit}
+          .join()
+          .let { response ->
+            Log.i("GroupLoad", "Received response. Status code is ${response.statusCode}")
+            if (response.statusCode != 200) return@supplyAsync null
+            response
+          }
+          .body().asString("application/json; charset=UTF-8")
+          .let {
+            Log.i("GroupLoad", "Got ${JsonParser.parseString(it).asJsonObject.get("data").asJsonArray.size()} groups")
+            if (it == "[]") return@supplyAsync null
+
+            JsonParser.parseString(it).asJsonObject.get("data").asJsonArray.map { mapGroup(it.asJsonObject) }
+          }
+      }
+  }*/
+
 
   fun mapCharacter(json: JsonObject): PFCharacter {
     val stat = json.get("stats").asJsonArray.map {mapJsonToStat(it.asJsonObject)};
@@ -145,15 +163,15 @@ class Characters(val baseUrl: String, val access: Access) {
       user = json.get("user").asString,
       image = json.get("image").asString,
       name = json.get("name").asString,
-      stats = mapJsonToStats(stat),
+      stats = mokkCharacter().stats,
       inventory = inventory,
       characterClass = json.get("class").asString
     )
   }
-  fun mapJsonToStats(list: List<Stat>): Stats {
+  /*fun mapJsonToStats(list: List<Stat>): Stat {
     var mappina = HashMap<String,Int>();
     list.forEach { a -> mappina[a.stat] = a.value }
-    return Stats(
+    return Stat(
       strength = mappina["strength"]!!,
       dexterity = mappina["dexterity"]!!,
       constitution = mappina["constitution"]!!,
@@ -161,7 +179,7 @@ class Characters(val baseUrl: String, val access: Access) {
       wisdom = mappina["wisdom"]!!,
       charisma = mappina["charisma"]!!,
     )
-  }
+  }*/
   fun mapJsonToStat(json: JsonObject): Stat {
     return Stat(
       stat = json.get("stat").asString,

@@ -32,18 +32,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.config.Config
 import com.example.parthfinder.api.Groups
-import com.example.parthfinder.api.Access
+import com.example.parthfinder.api.AuthAPI
 import com.example.parthfinder.api.Characters
 import com.example.parthfinder.theme.ParthFinderTheme
+import com.example.parthfinder.ui.screen.AccessScreen
 import com.example.parthfinder.ui.screen.CharactersScreen
 import com.example.parthfinder.ui.screen.HomeScreen
-import com.example.parthfinder.ui.screen.LoginScreen
 
 class MainActivity : ComponentActivity() {
 
     val config = Config()
     val groups = Groups(config.baseUrl)
-    val access = Access(config.baseUrl)
+    val access = AuthAPI(config.baseUrl)
     val characters = Characters(config.baseUrl, access)
 
 
@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
                             composable(MainRoute.Characters.name) { CharactersScreen(applicationContext, characters, access) }
                             composable(MainRoute.Campains.name) { ImagePicker(context = applicationContext) }
-                            composable(MainRoute.Login.name) { LoginScreen(access) }
+                            composable(MainRoute.Login.name) { AccessScreen(access) }
 
                         }
                     }
