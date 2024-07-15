@@ -97,7 +97,7 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
 
     return CompletableFuture
       .supplyAsync{
-        Fuel.delete("${baseUrl}/character")
+        Fuel.get("${baseUrl}/character")
           .header(Headers.COOKIE, "tk=${cookies["tk"]}")
           .response { _ -> }
           .join()
@@ -109,7 +109,6 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
           .body().asString("application/json; charset=UTF-8")
           .let { body ->
             JsonParser.parseString(body).asJsonObject.get("data").asJsonArray.map { characterFrom(it.asJsonObject) }
-            emptyList()
           }
       }
   }
