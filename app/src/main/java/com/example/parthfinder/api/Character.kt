@@ -93,7 +93,6 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
 
   override fun all(context: Context): CompletableFuture<List<PFCharacter>> {
     val cookies = access.getCookiesFromSharedPreferences(context);
-    val tk = cookies["tk"];
 
     return CompletableFuture
       .supplyAsync{
