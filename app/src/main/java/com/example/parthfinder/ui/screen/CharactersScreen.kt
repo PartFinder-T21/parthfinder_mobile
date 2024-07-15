@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,8 +21,10 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +41,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.example.parthfinder.api.AuthAPI
+import com.example.parthfinder.api.Character
 import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
@@ -48,62 +52,45 @@ import java.io.ByteArrayOutputStream
 @Composable
 fun CharactersScreen(context: Context, characters: CharacterAPI, access: AuthAPI) {
 
-  var selectedCharacter by remember { mutableStateOf<PFCharacter?>(null) }
   var characterList by remember {
-    mutableStateOf(emptyList<PFCharacter>())
+    mutableStateOf<List<PFCharacter>>(emptyList())
   }
-  characters.all(context).thenApply { list ->
-    characterList = list ?: emptyList()
-    Log.i("CHARACTER", "OK")
-  }
-
-  if (selectedCharacter == null) {
-    Column() {
-      CharacterGrid(characters = characterList) { character -> selectedCharacter = character }
-    }
-    ExtendedFloatingActionButton(
-      modifier = Modifier.background(Color.Blue),
-      onClick = {
-        selectedCharacter = PFCharacter(
-          user = access.getCookiesFromSharedPreferences(context)["name"]!!,
-          image = /*getBase64FromDrawable(context, R.drawable.default_image)*/"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-          name = "Premi per modificare il nome",
-          characterClass = "Modifica la classe",
-          stats = mokkCharacter().stats,
-          inventory = emptyList()
-        )
-        Log.i("Image", selectedCharacter!!.image)
-      },
-      icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
-      text = { Text(text = "Nuovo", color = Color.White) }
-    )
-  } else {
-    Column(
-      modifier = Modifier.fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center
-    ) {
-      CharacterSheet(
-        character = selectedCharacter!!,
-        characters = characters,
-        context = context
-      ) { selectedCharacter = null }
-    }
+  var selectedCharacter by remember {
+    mutableStateOf<PFCharacter?>(null)
   }
 
+  characters.all(context).thenApply { characterList = it }
+
+  if(selectedCharacter != null){
+    Character(selectedCharacter!!) {}
+  }
+  else {
+    Column {
+      Text(
+        text = "PERSONAGGI",
+        textAlign = TextAlign.Center,
+        textDecoration = TextDecoration.Underline,
+        fontSize = 8.em,
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(2f)
+          .padding(0.dp, 20.dp, 0.dp, 0.dp)
+      )
+      CharactersGrid(modifier = Modifier
+        .fillMaxWidth()
+        .weight(8f), characterList) {selectedCharacter = it}
+    }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd){
+      FloatingActionButton(onClick = {}, modifier = Modifier.padding(30.dp)) {
+        Icon(Icons.Filled.Add, "Floating action button.", tint = Color.White)
+      }
+    }
+  }
+  
 }
 
 @Composable
-fun CharacterGrid(characters: List<PFCharacter>, changeSelection: (PFCharacter) -> Unit) {
-  Text(
-    text = "PERSONAGGI",
-    textAlign = TextAlign.Center,
-    textDecoration = TextDecoration.Underline,
-    fontSize = 8.em,
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(0.dp, 20.dp, 0.dp, 0.dp)
-  )
+fun CharactersGrid(modifier: Modifier = Modifier, characters: List<PFCharacter>, onSelectedCharacter: (PFCharacter) -> Unit){
   LazyVerticalGrid(
     columns = GridCells.Fixed(3),
     horizontalArrangement = Arrangement.Center,
@@ -113,7 +100,7 @@ fun CharacterGrid(characters: List<PFCharacter>, changeSelection: (PFCharacter) 
       .fillMaxSize()
   ) {
     items(characters) {
-      Character(it) { character -> changeSelection(character) }
+      Character(it) { character -> onSelectedCharacter(character) }
     }
   }
 }
@@ -128,16 +115,24 @@ fun Character(character: PFCharacter, onClick: (PFCharacter) -> Unit) {
       .clickable(onClick = { onClick(character) }),
     contentAlignment = Alignment.Center,
   ) {
-    Column {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center,
+      modifier = Modifier.fillMaxSize()
+    ) {
       Image(
         bitmap = imageBitmapFrom(character.image),
         contentDescription = "Immagine personaggio",
-        modifier = Modifier.clip(CircleShape)
+        modifier = Modifier
+          .clip(CircleShape)
+          .weight(6f)
       )
       Text(
         text = character.name,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+          .fillMaxSize()
+          .weight(4f)
       )
     }
   }
