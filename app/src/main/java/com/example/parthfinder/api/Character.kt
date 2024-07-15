@@ -36,7 +36,7 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
           .response { _ -> }
           .join()
           .let { response ->
-            Log.i("Login", "Received response. Response is $response")
+            Log.i("Character", "Received response. Response is $response")
             if (response.statusCode != 201) return@supplyAsync null
             response
           }
@@ -60,7 +60,7 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
           .response { _ -> }
           .join()
           .let { response ->
-            Log.i("Login", "Received response. Response is $response")
+            Log.i("Character", "Received response. Response is $response")
             if (response.statusCode != 200) return@supplyAsync null
             response
           }
@@ -84,7 +84,7 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
           .response { _ -> }
           .join()
           .let { response ->
-            Log.i("Login", "Received response. Response is $response")
+            Log.i("Character", "Received response. Response is $response")
             if (response.statusCode != 200) return@supplyAsync null
             id
           }
@@ -97,19 +97,18 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
 
     return CompletableFuture
       .supplyAsync{
-        Fuel.delete("${baseUrl}/character")
+        Fuel.get("${baseUrl}/character")
           .header(Headers.COOKIE, "tk=${cookies["tk"]}")
           .response { _ -> }
           .join()
           .let { response ->
-            Log.i("Login", "Received response. Response is $response")
+            Log.i("Character", "Received response. Response is $response")
             if (response.statusCode != 200) return@supplyAsync null
             response
           }
           .body().asString("application/json; charset=UTF-8")
           .let { body ->
             JsonParser.parseString(body).asJsonObject.get("data").asJsonArray.map { characterFrom(it.asJsonObject) }
-            emptyList()
           }
       }
   }
