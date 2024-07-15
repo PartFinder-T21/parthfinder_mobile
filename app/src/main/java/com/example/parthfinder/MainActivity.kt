@@ -33,7 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.config.Config
 import com.example.parthfinder.api.Groups
 import com.example.parthfinder.api.AuthAPI
-import com.example.parthfinder.api.Characters
+import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.theme.ParthFinderTheme
 import com.example.parthfinder.ui.screen.AccessScreen
 import com.example.parthfinder.ui.screen.CharactersScreen
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
     val config = Config()
     val groups = Groups(config.baseUrl)
     val access = AuthAPI(config.baseUrl)
-    val characters = Characters(config.baseUrl, access)
+    val characters = CharacterAPI(config.baseUrl, access)
 
 
     @OptIn(ExperimentalMaterial3Api::class)

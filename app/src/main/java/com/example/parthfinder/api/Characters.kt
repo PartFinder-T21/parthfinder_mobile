@@ -33,7 +33,7 @@ class CharactersAPI(val baseUrl: String, val access: AuthAPI): Characters {
   }
 
   override fun newCharacter(character: PFCharacter, context: Context) : CompletableFuture<String> {
-    val cookies = access.getCookiesFromSharedPreferences(context);
+    /*val cookies = access.getCookiesFromSharedPreferences(context);
     val tk = cookies["tk"];
     val characterBody = toJson(character)
 
@@ -51,13 +51,13 @@ class CharactersAPI(val baseUrl: String, val access: AuthAPI): Characters {
       future.complete("false")
       return future
     }
-    /*val jsonStats = JSONArray()
+    *//*val jsonStats = JSONArray()
       .put(JSONObject().put("stat", "strength").put("value", character.stats.strength))
       .put(JSONObject().put("stat", "dexterity").put("value", character.stats.dexterity))
       .put(JSONObject().put("stat", "constitution").put("value", character.stats.constitution))
       .put(JSONObject().put("stat", "intelligence").put("value", character.stats.intelligence))
       .put(JSONObject().put("stat", "wisdom").put("value", character.stats.wisdom))
-      .put(JSONObject().put("stat", "charisma").put("value", character.stats.charisma))*/
+      .put(JSONObject().put("stat", "charisma").put("value", character.stats.charisma))*//*
 
     val jsonBody = JSONObject().apply {
       put("name", character.name)
@@ -97,11 +97,12 @@ class CharactersAPI(val baseUrl: String, val access: AuthAPI): Characters {
         future.completeExceptionally(e)
       }
     }
-    return future
+    return future*/
+    return CompletableFuture.completedFuture("")
   }
 
   override fun getCharacters(context: Context) : CompletableFuture<List<PFCharacter>?> {
-    val cookies = access.getCookiesFromSharedPreferences(context);
+    /*val cookies = access.getCookiesFromSharedPreferences(context);
     Log.i("COOKIE", cookies.toString())
 
 
@@ -148,7 +149,8 @@ class CharactersAPI(val baseUrl: String, val access: AuthAPI): Characters {
         future.completeExceptionally(e)
       }
     }
-    return future
+    return future*/
+    return CompletableFuture.completedFuture(emptyList())
   }
 
   override fun editCharacter(character: PFCharacter, context: Context): CompletableFuture<Unit>{

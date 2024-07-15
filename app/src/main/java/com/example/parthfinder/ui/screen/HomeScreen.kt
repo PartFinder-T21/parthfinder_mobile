@@ -43,21 +43,6 @@ import com.example.parthfinder.api.Groups
 import com.example.parthfinder.repository.Player
 
 
-@Composable
-@Preview
-fun tryfun() {
-  val config = Config()
-  val groups = Groups(config.baseUrl)
-  HomeScreen(groups = groups)
-}
-
-@Composable
-@Preview
-fun tryCard() {
-  GroupCard(Group())
-}
-
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(groups: Groups) {

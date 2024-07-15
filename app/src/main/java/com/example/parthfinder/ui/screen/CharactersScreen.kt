@@ -38,7 +38,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.example.parthfinder.api.AuthAPI
-import com.example.parthfinder.api.Characters
+import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
 import com.example.parthfinder.ui.component.CharacterSheet
@@ -46,13 +46,13 @@ import com.example.parthfinder.util.imageBitmapFrom
 import java.io.ByteArrayOutputStream
 
 @Composable
-fun CharactersScreen(context: Context, characters: Characters, access: AuthAPI) {
+fun CharactersScreen(context: Context, characters: CharacterAPI, access: AuthAPI) {
 
   var selectedCharacter by remember { mutableStateOf<PFCharacter?>(null) }
   var characterList by remember {
     mutableStateOf(emptyList<PFCharacter>())
   }
-  characters.getCharacters(context).thenApply { list ->
+  characters.all(context).thenApply { list ->
     characterList = list ?: emptyList()
     Log.i("CHARACTER", "OK")
   }

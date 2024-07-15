@@ -55,14 +55,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import com.example.parthfinder.api.Characters
+import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
 import com.example.parthfinder.repository.Stat
 import java.io.ByteArrayOutputStream
 
 @Composable
-fun CharacterSheet(characters: Characters, character: PFCharacter, context: Context, close: () -> Unit) {
+fun CharacterSheet(characters: CharacterAPI, character: PFCharacter, context: Context, close: () -> Unit) {
   var sheetState by remember { mutableStateOf(true) }
   var testoCambiaPagina by remember { mutableStateOf("Inventario") }
   Card(
@@ -90,7 +90,7 @@ fun CharacterSheet(characters: Characters, character: PFCharacter, context: Cont
       Spacer(modifier = Modifier.fillMaxWidth(0.3f))
       Button(onClick = {
         if(character.id == null){
-          characters.newCharacter(character, context)
+          characters.new(character, context)
         }
         else{
           //characters.editCharacter(character, context)
