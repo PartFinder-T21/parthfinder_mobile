@@ -1,6 +1,5 @@
 package com.example.parthfinder
 
-import ImagePicker
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -93,7 +92,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
                             composable(MainRoute.Characters.name) { CharactersScreen(applicationContext, characters, access) }
-                            composable(MainRoute.Campains.name) { CampainScreen(groups,access,applicationContext) }
+                            composable(MainRoute.Campains.name) { CampainScreen(applicationContext, groups, access) }
                             composable(MainRoute.Login.name) { AccessScreen(access) }
 random things
                         }
