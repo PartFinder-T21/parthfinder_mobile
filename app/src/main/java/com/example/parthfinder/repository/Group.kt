@@ -1,6 +1,7 @@
 package com.example.parthfinder.repository
 
 data class Group(
+    val id: String?= "",
     val groupCode: String?= "",
     val master: Master?= Master(),
     val name: String?= "",
