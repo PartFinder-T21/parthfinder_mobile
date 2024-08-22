@@ -20,16 +20,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.parthfinder.R
 import com.example.parthfinder.api.AuthAPI
+import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.api.Groups
 import com.example.parthfinder.repository.Group
 import com.example.parthfinder.ui.component.CampaignCardMaster
+import com.example.parthfinder.ui.component.CampaignCardPlayer
 import com.example.parthfinder.ui.component.NewCampaign
+import com.example.parthfinder.ui.component.SearchByCode
 
 @Composable
-fun CampainScreen(context: Context, groups: Groups, access: AuthAPI) {
+fun CampainScreen(context: Context, groupsAPI: Groups,characterAPI: CharacterAPI, access: AuthAPI) {
     var groupList by remember { mutableStateOf(emptyList<Group>()) }
     val my_name = access.getCookiesFromSharedPreferences(context)["id"]
-    groups.loadMyGroups(access, context).thenAccept {
+    groupsAPI.loadMyGroups(access, context).thenAccept {
         if (it != null) {
             groupList = it
         }
@@ -40,7 +43,11 @@ fun CampainScreen(context: Context, groups: Groups, access: AuthAPI) {
     val scrollState = rememberScrollState()
     var selectedGroup by remember { mutableStateOf<Group?>(null) }
     var newCampaignForm by remember { mutableStateOf(false) }
+    var showSearchDialog by remember { mutableStateOf(false) }
 
+    if(showSearchDialog) {
+        SearchByCode(groupsAPI,characterAPI,context,access)
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -55,7 +62,7 @@ fun CampainScreen(context: Context, groups: Groups, access: AuthAPI) {
             Icon(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 painter = painterResource(id = R.drawable.master_icon),
-                contentDescription = "home"
+                contentDescription = "master"
             )
             Text(
                 text = "Master",
@@ -65,7 +72,7 @@ fun CampainScreen(context: Context, groups: Groups, access: AuthAPI) {
             )
         }
         if(newCampaignForm) {
-            NewCampaign(groups = groups, access = access, context = context)
+            NewCampaign(groups = groupsAPI, access = access, context = context)
         }
         else {
             masterGroups.forEach { gruppo ->
@@ -73,7 +80,7 @@ fun CampainScreen(context: Context, groups: Groups, access: AuthAPI) {
                     master = true,
                     gruppo = gruppo,
                     context = context,
-                    groups = groups,
+                    groups = groupsAPI,
                     access = access,
                     onCardVisibilityChanged = { group -> selectedGroup = group },
                     isCardVisible = selectedGroup == gruppo
@@ -94,7 +101,7 @@ fun CampainScreen(context: Context, groups: Groups, access: AuthAPI) {
             Icon(
                 modifier = Modifier.padding(horizontal = 5.dp),
                 painter = painterResource(id = R.drawable.player_icon),
-                contentDescription = "home"
+                contentDescription = "player"
             )
             Text(
                 text = "Giocatore",
@@ -108,7 +115,7 @@ fun CampainScreen(context: Context, groups: Groups, access: AuthAPI) {
                 master = false,
                 gruppo = gruppo,
                 context = context,
-                groups = groups,
+                groups = groupsAPI,
                 access = access,
                 onCardVisibilityChanged = { group -> selectedGroup = group },
                 isCardVisible = selectedGroup == gruppo
@@ -116,7 +123,7 @@ fun CampainScreen(context: Context, groups: Groups, access: AuthAPI) {
         }
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { showSearchDialog = !showSearchDialog },
             colors = ButtonDefaults.buttonColors(Color.Red),
             modifier = Modifier.padding(10.dp)
         ) {
@@ -145,6 +152,14 @@ fun CampaignRow(
     ) {
         if (isCardVisible && master) {
             CampaignCardMaster(
+                group = gruppo,
+                groups = groups,
+                access = access,
+                context = context
+            )
+        }
+        else if (isCardVisible) {
+            CampaignCardPlayer(
                 group = gruppo,
                 groups = groups,
                 access = access,

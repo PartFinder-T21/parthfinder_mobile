@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
                             composable(MainRoute.Characters.name) { CharactersScreen(applicationContext, characters, access) }
-                            composable(MainRoute.Campains.name) { CampainScreen(applicationContext, groups, access) }
+                            composable(MainRoute.Campains.name) { CampainScreen(applicationContext, groups, characters, access) }
                             composable(MainRoute.Login.name) { AccessScreen(access) }
 
                         }

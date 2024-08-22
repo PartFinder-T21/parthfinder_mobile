@@ -18,11 +18,15 @@ class Groups(
   val baseUrl: String
 ) {
 
-  fun loadAll(): CompletableFuture<List<Group>> {
+  fun loadAll(code:String?=""): CompletableFuture<List<Group>> {
+    var query = "";
+    if(code!!.isNotEmpty()){
+      query = "?code=$code"
+    }
     return CompletableFuture
       .supplyAsync{
         Log.i("GroupLoad", "Starting to retretive groups from $baseUrl/group")
-        Fuel.get("${baseUrl}/group")
+        Fuel.get("${baseUrl}/group$query")
           .response { _ -> Unit}
           .join()
           .let { response ->
@@ -65,6 +69,7 @@ class Groups(
           }
       }
   }
+
   fun createNewGroup(group:Group,access:AuthAPI,context: Context): CompletableFuture<String> {
     val cookies = access.getCookiesFromSharedPreferences(context);
     val groupBody = toJson(group)

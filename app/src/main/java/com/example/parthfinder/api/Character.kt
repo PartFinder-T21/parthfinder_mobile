@@ -36,7 +36,7 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
           .response { _ -> }
           .join()
           .let { response ->
-            Log.i("Login", "Received response. Response is $response")
+            Log.i("Character", "Received response. Response is $response")
             if (response.statusCode != 201) return@supplyAsync null
             response
           }
@@ -60,7 +60,7 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
           .response { _ -> }
           .join()
           .let { response ->
-            Log.i("Login", "Received response. Response is $response")
+            Log.i("Character", "Received response. Response is $response")
             if (response.statusCode != 200) return@supplyAsync null
             response
           }
@@ -84,7 +84,7 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
           .response { _ -> }
           .join()
           .let { response ->
-            Log.i("Login", "Received response. Response is $response")
+            Log.i("Character", "Received response. Response is $response")
             if (response.statusCode != 200) return@supplyAsync null
             id
           }
@@ -102,7 +102,7 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
           .response { _ -> }
           .join()
           .let { response ->
-            Log.i("Login", "Received response. Response is $response")
+            Log.i("Character", "Received response. Response is $response")
             if (response.statusCode != 200) return@supplyAsync null
             response
           }
