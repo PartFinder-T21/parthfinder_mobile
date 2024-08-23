@@ -8,6 +8,7 @@ import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -30,6 +32,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,8 +56,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
@@ -88,15 +93,15 @@ fun CharacterSheet(characters: CharacterAPI, character: PFCharacter, context: Co
         Text(text = testoCambiaPagina)
       }
       Spacer(modifier = Modifier.fillMaxWidth(0.3f))
-      Button(onClick = {
+      Button(colors = ButtonDefaults.buttonColors(Color.Red),onClick = {
         if(character.id == null){
           characters.new(character, context)
         }
         else{
-          //characters.editCharacter(character, context)
+          characters.edit(character, context)
         }
       }) {
-        Text(text = "Salva")
+        Text(text = "Salva",color=Color.White)
       }
 
     }
@@ -125,7 +130,7 @@ fun CharacterSheetFrontSize(character: PFCharacter) {
         character.image =  Base64.encodeToString(byteArray, Base64.DEFAULT)
       }
     }
-  Column {
+  Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
     Row(
       modifier = Modifier
         .fillMaxWidth()
@@ -175,7 +180,7 @@ fun CharacterSheetFrontSize(character: PFCharacter) {
       ),
       singleLine = true
     )
-    //StatsGrid(character.stats)
+    StatsGrid(character.stats)
   }
 }
 
@@ -216,89 +221,44 @@ fun CharacterSheetBackSize(character: PFCharacter) {
 
 
 @Composable
-fun StatsGrid(statistics: Stat) {
-  val keyboardManager = LocalSoftwareKeyboardController.current
-  val focusManager = LocalFocusManager.current
-  val stats = mokkCharacter(
-    //"Str" to statistics.strength.toString(),
-    //"Dex" to statistics.dexterity.toString(),
-    //"Con" to statistics.constitution.toString(),
-    //"Int" to statistics.intelligence.toString(),
-    //"Wis" to statistics.wisdom.toString(),
-    //"Cha" to statistics.charisma.toString()
-  ).stats
-  LazyVerticalGrid(
-    columns = GridCells.Fixed(2),
-    modifier = Modifier
-  ) {
-    items(stats) {
-      Box(
-        modifier = Modifier
-          .fillMaxWidth(0.5f)
-          .padding(10.dp)
-          .clickable {
-            keyboardManager!!.hide()
-            focusManager.clearFocus()
-          }
-      ) {
-       // StatBlock(name = it.first, value = it.second, statistics)
+fun StatsGrid(statistics: List<Stat>) {
+  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    //GRID
+    LazyVerticalGrid(
+      columns = GridCells.Fixed(2),
+      modifier = Modifier.padding(start = 20.dp, bottom = 20.dp,top=10.dp),
+      verticalArrangement = Arrangement.spacedBy(20.dp),
+      horizontalArrangement = Arrangement.spacedBy(40.dp)
+    ) {
+      items(statistics.size) { index ->
+        val item = statistics[index];
+        LabeledBox(item.stat, item.value) { newString ->
+          if(newString.isNotEmpty())
+            item.value = newString.toInt();
+          else
+            item.value = 0;
+        }
       }
     }
   }
 }
-
 @Composable
-fun StatBlock(name: String, value: String, stats: Stat) {
-  Row(
-    modifier = Modifier.fillMaxSize(),
-    verticalAlignment = Alignment.CenterVertically
-  ) {
-    var stat by remember { mutableStateOf(value) }
-    TextField(
-      value = stat,
-      onValueChange = { number ->
-        if(number == "") {stat = "0"}
-        else { stat = number}
-        /*when (name) {
-          /*"Str" -> stats.strength = stat.toInt()
-          "Dex" -> stats.dexterity = stat.toInt()
-          "Con" -> stats.constitution = stat.toInt()
-          "Int" -> stats.intelligence = stat.toInt()
-          "Wis" -> stats.wisdom = stat.toInt()
-          "Cha" -> stats.charisma = stat.toInt()*/
-        }*/
-      },
-      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-      modifier = Modifier
-        .fillMaxWidth(0.5f)
-        .border(2.dp, Color.Black, RoundedCornerShape(30)),
-      colors = TextFieldDefaults.colors(
-        unfocusedContainerColor = Color.Transparent,
-        focusedContainerColor = Color.Transparent,
-        focusedIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent,
-        disabledIndicatorColor = Color.Transparent,
-        errorIndicatorColor = Color.Transparent,
-      ),
-      textStyle = TextStyle(
-        textAlign = TextAlign.Center,
-        fontSize = 5.em,
-      ),
-    )
-    Text(
-      text = name.uppercase(),
-      textAlign = TextAlign.Center,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(5.dp, 0.dp, 0.dp, 0.dp),
-      fontSize = 5.em,
-      fontWeight = FontWeight.Bold
-    )
+private fun LabeledBox(stat:String,value:Int,onValueChange:(String)->Unit) {
+  var numero by remember { mutableStateOf(value.toString()) }
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Box(modifier = Modifier
+      .size(60.dp)
+      .background(Color.White)
+      .border(2.dp, Color.White), contentAlignment = Alignment.Center){
+      TextField(value = numero, onValueChange = {newText->numero = newText;onValueChange(numero)},textStyle = TextStyle(
+        fontSize = 25.sp, textAlign = TextAlign.Center, color = Color.White, textDecoration = TextDecoration.Underline
+      ),)
+    }
+    Text(text = stat.take(3).uppercase(), fontSize = 20.sp, modifier = Modifier.padding(start = 10.dp), color = Color.White)
   }
 }
 
-
-fun inventoryToString(list: List<String>): String {
+private fun inventoryToString(list: List<String>): String {
   var text = ""
   list.forEach {
     text += "$it\n"

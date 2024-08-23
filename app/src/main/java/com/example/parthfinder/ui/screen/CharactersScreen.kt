@@ -11,10 +11,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -33,15 +37,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import com.example.parthfinder.api.AuthAPI
 import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
 import com.example.parthfinder.ui.component.CharacterSheet
+import com.example.parthfinder.ui.component.CharacterSheetV2
 import com.example.parthfinder.util.imageBitmapFrom
 import java.io.ByteArrayOutputStream
 
@@ -58,25 +65,34 @@ fun CharactersScreen(context: Context, characters: CharacterAPI, access: AuthAPI
   }
 
   if (selectedCharacter == null) {
-    Column() {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
+      Text(
+        text = "PERSONAGGI",
+        textAlign = TextAlign.Center,
+        textDecoration = TextDecoration.Underline,
+        fontSize = 8.em,
+        modifier = Modifier
+          .fillMaxWidth()
+      )
+      Spacer(modifier = Modifier.padding(bottom = 20.dp))
       CharacterGrid(characters = characterList) { character -> selectedCharacter = character }
+
+      ExtendedFloatingActionButton(
+        onClick = {
+          selectedCharacter = PFCharacter(
+            user = access.getCookiesFromSharedPreferences(context)["name"]!!,
+            image = "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
+            name = "Premi per modificare il nome",
+            characterClass = "Modifica la classe",
+            stats = mokkCharacter().stats,
+            inventory = emptyList()
+          )
+        },
+        icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
+        text = { Text(text = "Nuovo", color = Color.White) },
+        containerColor = Color.Red
+      )
     }
-    ExtendedFloatingActionButton(
-      modifier = Modifier.background(Color.Blue),
-      onClick = {
-        selectedCharacter = PFCharacter(
-          user = access.getCookiesFromSharedPreferences(context)["name"]!!,
-          image = /*getBase64FromDrawable(context, R.drawable.default_image)*/"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC",
-          name = "Premi per modificare il nome",
-          characterClass = "Modifica la classe",
-          stats = mokkCharacter().stats,
-          inventory = emptyList()
-        )
-        Log.i("Image", selectedCharacter!!.image)
-      },
-      icon = { Icon(Icons.Filled.Edit, "Extended floating action button.") },
-      text = { Text(text = "Nuovo", color = Color.White) }
-    )
   } else {
     Column(
       modifier = Modifier.fillMaxSize(),
@@ -95,22 +111,10 @@ fun CharactersScreen(context: Context, characters: CharacterAPI, access: AuthAPI
 
 @Composable
 fun CharacterGrid(characters: List<PFCharacter>, changeSelection: (PFCharacter) -> Unit) {
-  Text(
-    text = "PERSONAGGI",
-    textAlign = TextAlign.Center,
-    textDecoration = TextDecoration.Underline,
-    fontSize = 8.em,
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(0.dp, 20.dp, 0.dp, 0.dp)
-  )
   LazyVerticalGrid(
     columns = GridCells.Fixed(3),
     horizontalArrangement = Arrangement.Center,
     verticalArrangement = Arrangement.Top,
-    modifier = Modifier
-      .padding(20.dp)
-      .fillMaxSize()
   ) {
     items(characters) {
       Character(it) { character -> changeSelection(character) }
@@ -128,16 +132,21 @@ fun Character(character: PFCharacter, onClick: (PFCharacter) -> Unit) {
       .clickable(onClick = { onClick(character) }),
     contentAlignment = Alignment.Center,
   ) {
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
       Image(
         bitmap = imageBitmapFrom(character.image),
         contentDescription = "Immagine personaggio",
-        modifier = Modifier.clip(CircleShape)
-      )
+        modifier = Modifier
+          .clip(CircleShape)
+          .size(85.dp),
+        contentScale = ContentScale.Crop,
+
+        )
       Text(
         text = character.name,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        fontSize = 15.sp
       )
     }
   }
