@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxWidth()
                         ) {
                             composable(MainRoute.Home.name) { HomeScreen(groups) }
-                            composable(MainRoute.Characters.name) { CharactersScreen(applicationContext, characters, access) }
+                            composable(MainRoute.Characters.name) { CharactersScreen(characters, access) }
                             composable(MainRoute.Campains.name) { ImagePicker(context = applicationContext) }
                             composable(MainRoute.Login.name) { AccessScreen(access) }
 

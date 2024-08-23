@@ -38,6 +38,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,6 +60,9 @@ import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
 import com.example.parthfinder.repository.Stat
+import com.example.parthfinder.repository.base64FromUri
+import com.example.parthfinder.repository.imageFrombase64
+import com.example.parthfinder.repository.uriToImageBitmap
 import java.io.ByteArrayOutputStream
 
 @Composable
@@ -93,7 +97,7 @@ fun CharacterSheet(characters: CharacterAPI, character: PFCharacter, context: Co
           characters.new(character, context)
         }
         else{
-          //characters.editCharacter(character, context)
+          characters.edit(character, context)
         }
       }) {
         Text(text = "Salva")
@@ -120,7 +124,7 @@ fun CharacterSheetFrontSize(character: PFCharacter) {
         val bitmap = uriToImageBitmap(context, it)
         imageBitmap = bitmap.asImageBitmap()
         val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 20, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
         character.image =  Base64.encodeToString(byteArray, Base64.DEFAULT)
       }
@@ -175,7 +179,7 @@ fun CharacterSheetFrontSize(character: PFCharacter) {
       ),
       singleLine = true
     )
-    //StatsGrid(character.stats)
+    StatsGrid(character.stats)
   }
 }
 
@@ -216,17 +220,9 @@ fun CharacterSheetBackSize(character: PFCharacter) {
 
 
 @Composable
-fun StatsGrid(statistics: Stat) {
+fun StatsGrid(stats: List<Stat>) {
   val keyboardManager = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
-  val stats = mokkCharacter(
-    //"Str" to statistics.strength.toString(),
-    //"Dex" to statistics.dexterity.toString(),
-    //"Con" to statistics.constitution.toString(),
-    //"Int" to statistics.intelligence.toString(),
-    //"Wis" to statistics.wisdom.toString(),
-    //"Cha" to statistics.charisma.toString()
-  ).stats
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
     modifier = Modifier
@@ -241,32 +237,24 @@ fun StatsGrid(statistics: Stat) {
             focusManager.clearFocus()
           }
       ) {
-       // StatBlock(name = it.first, value = it.second, statistics)
+       StatBlock(it)
       }
     }
   }
 }
 
 @Composable
-fun StatBlock(name: String, value: String, stats: Stat) {
+fun StatBlock(stat: Stat) {
   Row(
     modifier = Modifier.fillMaxSize(),
     verticalAlignment = Alignment.CenterVertically
   ) {
-    var stat by remember { mutableStateOf(value) }
+    var value by remember { mutableIntStateOf(stat.value) }
     TextField(
-      value = stat,
+      value = value.toString(),
       onValueChange = { number ->
-        if(number == "") {stat = "0"}
-        else { stat = number}
-        /*when (name) {
-          /*"Str" -> stats.strength = stat.toInt()
-          "Dex" -> stats.dexterity = stat.toInt()
-          "Con" -> stats.constitution = stat.toInt()
-          "Int" -> stats.intelligence = stat.toInt()
-          "Wis" -> stats.wisdom = stat.toInt()
-          "Cha" -> stats.charisma = stat.toInt()*/
-        }*/
+        if(number == "") {value = 0}
+        else { value = number.toInt()}
       },
       keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
       modifier = Modifier
@@ -286,7 +274,7 @@ fun StatBlock(name: String, value: String, stats: Stat) {
       ),
     )
     Text(
-      text = name.uppercase(),
+      text = stat.stat.uppercase(),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -304,10 +292,4 @@ fun inventoryToString(list: List<String>): String {
     text += "$it\n"
   }
   return text
-}
-
-fun uriToImageBitmap(context: Context, uri: Uri): Bitmap {
-  val inputStream = context.contentResolver.openInputStream(uri)
-  val bitmap = BitmapFactory.decodeStream(inputStream)
-  return bitmap
 }

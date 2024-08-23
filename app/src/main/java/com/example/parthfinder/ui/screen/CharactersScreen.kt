@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -50,7 +51,9 @@ import com.example.parthfinder.util.imageBitmapFrom
 import java.io.ByteArrayOutputStream
 
 @Composable
-fun CharactersScreen(context: Context, characters: CharacterAPI, access: AuthAPI) {
+fun CharactersScreen(characters: CharacterAPI, access: AuthAPI) {
+
+  val context = LocalContext.current
 
   var characterList by remember {
     mutableStateOf<List<PFCharacter>>(emptyList())
@@ -59,12 +62,14 @@ fun CharactersScreen(context: Context, characters: CharacterAPI, access: AuthAPI
     mutableStateOf<PFCharacter?>(null)
   }
 
-  characters.all(context).thenApply { characterList = it }
-
-  if(selectedCharacter != null){
-    Character(selectedCharacter!!) {}
+  characters.all(context).thenApply {
+    Log.i("Characters", it.toString())
+    characterList = it
   }
-  else {
+
+  if (selectedCharacter != null) {
+    CharacterSheet(characters, selectedCharacter!!, context) { selectedCharacter = null }
+  } else {
     Column {
       Text(
         text = "PERSONAGGI",
@@ -76,28 +81,34 @@ fun CharactersScreen(context: Context, characters: CharacterAPI, access: AuthAPI
           .weight(2f)
           .padding(0.dp, 20.dp, 0.dp, 0.dp)
       )
-      CharactersGrid(modifier = Modifier
-        .fillMaxWidth()
-        .weight(8f), characterList) {selectedCharacter = it}
+      CharactersGrid(
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(8f), characterList
+      ) { selectedCharacter = it }
     }
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd){
-      FloatingActionButton(onClick = {}, modifier = Modifier.padding(30.dp)) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+      FloatingActionButton(onClick = {
+        selectedCharacter = PFCharacter.simplePfCharacter(context)
+      }, modifier = Modifier.padding(30.dp)) {
         Icon(Icons.Filled.Add, "Floating action button.", tint = Color.White)
       }
     }
   }
-  
+
 }
 
 @Composable
-fun CharactersGrid(modifier: Modifier = Modifier, characters: List<PFCharacter>, onSelectedCharacter: (PFCharacter) -> Unit){
+fun CharactersGrid(
+  modifier: Modifier = Modifier,
+  characters: List<PFCharacter>,
+  onSelectedCharacter: (PFCharacter) -> Unit
+) {
   LazyVerticalGrid(
     columns = GridCells.Fixed(3),
     horizontalArrangement = Arrangement.Center,
     verticalArrangement = Arrangement.Top,
-    modifier = Modifier
-      .padding(20.dp)
-      .fillMaxSize()
+    modifier = modifier
   ) {
     items(characters) {
       Character(it) { character -> onSelectedCharacter(character) }
@@ -136,12 +147,4 @@ fun Character(character: PFCharacter, onClick: (PFCharacter) -> Unit) {
       )
     }
   }
-}
-
-fun getBase64FromDrawable(context: Context, drawableId: Int): String {
-  val bitmap = BitmapFactory.decodeResource(context.resources, drawableId)
-  val byteArrayOutputStream = ByteArrayOutputStream()
-  bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-  val byteArray = byteArrayOutputStream.toByteArray()
-  return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
