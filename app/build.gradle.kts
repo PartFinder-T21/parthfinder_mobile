@@ -72,4 +72,5 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.gson.v286)
     implementation(libs.fuel)
+  implementation (libs.compose.bubble)
 }
