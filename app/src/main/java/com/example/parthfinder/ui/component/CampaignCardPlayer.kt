@@ -66,7 +66,7 @@ fun CampaignCardPlayer(group:Group, groups: Groups,access: AuthAPI,context: Cont
                     .fillMaxWidth(0.9f)
                     .padding(20.dp)
             ) {
-                Text(text = name, color = Color.Black, fontWeight = FontWeight.Bold)
+                Text(text = name, color = Color.White, fontWeight = FontWeight.Bold)
             }
             //BODY
             Column(
@@ -84,7 +84,7 @@ fun CampaignCardPlayer(group:Group, groups: Groups,access: AuthAPI,context: Cont
                         .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(text = "DESCRIZIONE", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    Text(text = description, color = Color.Black)
+                    Text(text = description, color = Color.White)
                 }
                 //Giocatori
                 Column(

@@ -38,12 +38,14 @@ fun CampainScreen(context: Context, groupsAPI: Groups,characterAPI: CharacterAPI
         }
     }
     val masterGroups = groupList.filter { a -> a.master!!.id == my_name }
-    val playerGroups = groupList.filter { a -> !masterGroups.contains(a) }
+    val playerGroups = groupList.filter { a -> a.characters!!.any { player -> player.idUsername == my_name } }
 
     val scrollState = rememberScrollState()
     var selectedGroup by remember { mutableStateOf<Group?>(null) }
     var newCampaignForm by remember { mutableStateOf(false) }
     var showSearchDialog by remember { mutableStateOf(false) }
+    var masterSelected by remember { mutableStateOf(false) }
+    var playerSelected by remember { mutableStateOf(false) }
 
     if(showSearchDialog) {
         SearchByCode(groupsAPI,characterAPI,context,access)
@@ -82,8 +84,8 @@ fun CampainScreen(context: Context, groupsAPI: Groups,characterAPI: CharacterAPI
                     context = context,
                     groups = groupsAPI,
                     access = access,
-                    onCardVisibilityChanged = { group -> selectedGroup = group },
-                    isCardVisible = selectedGroup == gruppo
+                    onCardVisibilityChanged = { group -> selectedGroup = group; masterSelected  = !masterSelected;},
+                    isCardVisible = selectedGroup == gruppo && masterSelected,
                 )
             }
         }
@@ -117,8 +119,8 @@ fun CampainScreen(context: Context, groupsAPI: Groups,characterAPI: CharacterAPI
                 context = context,
                 groups = groupsAPI,
                 access = access,
-                onCardVisibilityChanged = { group -> selectedGroup = group },
-                isCardVisible = selectedGroup == gruppo
+                onCardVisibilityChanged = { group -> selectedGroup = group; playerSelected = !playerSelected},
+                isCardVisible = selectedGroup == gruppo && playerSelected,
             )
         }
 
@@ -140,7 +142,7 @@ fun CampaignRow(
     groups: Groups,
     access: AuthAPI,
     onCardVisibilityChanged: (Group) -> Unit,
-    isCardVisible: Boolean
+    isCardVisible: Boolean,
 ) {
     Spacer(Modifier.padding(10.dp))
     Row(
