@@ -29,10 +29,11 @@ import com.example.parthfinder.api.Groups
 import com.example.parthfinder.repository.PFCharacter
 
 @Composable
-fun SearchByCode(groupAPI:Groups,charactersAPI: CharacterAPI,context: Context,access: AuthAPI){
-    var code by remember { mutableStateOf("") }
+fun SearchByCode(groupAPI:Groups,charactersAPI: CharacterAPI,context: Context,access: AuthAPI,selectedCode:String=""){
+    var code by remember { mutableStateOf(selectedCode) }
     var options by remember { mutableStateOf( emptyList<PFCharacter>() ) }
     var selectedOption by remember { mutableStateOf("") }
+    var selectedId by remember { mutableStateOf("") }
     var showInput by remember { mutableStateOf(true) };
 
     charactersAPI.all(context).thenAccept {
@@ -43,20 +44,21 @@ fun SearchByCode(groupAPI:Groups,charactersAPI: CharacterAPI,context: Context,ac
 
 
     if(showInput) {
-        CodeAndDropdownDialog (code,selectedOption,options,{ showInput = !showInput },
+        CodeAndDropdownDialog (code,groupAPI,selectedOption,selectedId,options,{ showInput = !showInput },
             { newCode ->
                 if (newCode.length == 5) {
                     code = newCode;
                 }
             },
-            { newSelection -> selectedOption = newSelection}
+            { newSelection -> selectedOption = "${newSelection.name}-${newSelection.characterClass}"; selectedId = newSelection.id!!},
+            { groupAPI.requestJoin(code,selectedId,selectedOption,access,context) }
         )
     }
 }
 @Composable
-fun CodeAndDropdownDialog(code:String,selectedOption:String,options:List<PFCharacter>,onDismiss: () -> Unit, onValueChange:(String)->Unit,
-                          onSelectOption:(String)->Unit) {
-    var newCode by remember { mutableStateOf("") }
+fun CodeAndDropdownDialog(code:String,groupAPI: Groups,selectedOption:String,selectedId:String,options:List<PFCharacter>,onDismiss: () -> Unit, onValueChange:(String)->Unit,
+                          onSelectOption:(PFCharacter)->Unit, onRequest:()->Unit) {
+    var newCode by remember { mutableStateOf(code) }
     var expanded by remember { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -101,7 +103,8 @@ fun CodeAndDropdownDialog(code:String,selectedOption:String,options:List<PFChara
                             modifier = Modifier.background(Color.Transparent),
                             text = {Text("${option.name}-${option.characterClass}")},
                             onClick = {
-                                onSelectOption(option.id!!)
+                                onSelectOption(option)
+                                expanded = false;
                             }
                         )
                     }
@@ -114,8 +117,8 @@ fun CodeAndDropdownDialog(code:String,selectedOption:String,options:List<PFChara
                     colors = ButtonDefaults.buttonColors(Color.Red),
                     onClick = {
                         if (newCode.length == 5 && selectedOption.isNotEmpty()) {
-                            //load(selectedOption) // Call the load function with the selected option
-                            onDismiss() // Dismiss after selection
+                            onRequest();
+                            onDismiss(); // Dismiss after selection
                         }
                     }
                 ) {

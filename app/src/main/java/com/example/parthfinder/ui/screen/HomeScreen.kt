@@ -2,8 +2,6 @@ package com.example.parthfinder.ui.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,13 +13,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,38 +29,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-import com.example.myapplication.config.Config
 import com.example.parthfinder.repository.Group
 import com.example.parthfinder.api.Groups
 import com.example.parthfinder.repository.Player
 
-
+/*
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(groups: Groups) {
   var groupList by remember { mutableStateOf(emptyList<Group>()) }
+  var showJoinForm by remember { mutableStateOf(false) }
+  var selecterGroup by remember { mutableStateOf("") }
   groups.loadAll().thenAccept { groupList = it }
 
+  if(showJoinForm) {
 
+  }
   Column(
     modifier = Modifier
       .verticalScroll(rememberScrollState())
       .fillMaxWidth()
   ) {
     groupList.forEach {
-      GroupCard(it)
+      GroupCard(it,{code-> showJoinForm = !showJoinForm; selecterGroup = code})
     }
   }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun GroupCard(group: Group) {
+fun GroupCard(group: Group,onCLick: (String) -> Unit) {
   var visibility by remember { mutableStateOf(CardStatus.Description) }
-
   Card(
     onClick = {
       visibility = if (visibility == CardStatus.Description) {
@@ -98,21 +94,13 @@ fun GroupCard(group: Group) {
             .wrapContentSize(Alignment.Center)
         )
       }
-
-      if (visibility == CardStatus.Join) {
-        JoinCard { visibility = CardStatus.Description }
-      } else {
-        NonJoinCard(visibility = visibility, group = group) {
-          visibility = CardStatus.Join
-        }
+      NonJoinCard(visibility = visibility, group = group, onClick = onCLick)
       }
     }
-
-  }
 }
 
 @Composable
-fun NonJoinCard(visibility: CardStatus, group: Group, onClick: () -> Unit) {
+fun NonJoinCard(visibility: CardStatus, group: Group, onClick: (String) -> Unit) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
@@ -155,34 +143,12 @@ fun NonJoinCard(visibility: CardStatus, group: Group, onClick: () -> Unit) {
         modifier = Modifier.padding(20.dp)
       )
     }
-    ButtonGroup(onClick, "Gioca")
+    ButtonGroup(onClick,group.groupCode!!, "Gioca")
   }
 }
 
 @Composable
-fun JoinCard(onClick: () -> Unit) {
-  Row(
-    verticalAlignment = Alignment.Bottom,
-    modifier = Modifier
-      .fillMaxWidth()
-      .fillMaxHeight(0.4f)
-      .padding(10.dp)
-  ) {
-    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", modifier = Modifier.clickable { onClick() })
-  }
-  Row(
-    verticalAlignment = Alignment.Bottom,
-    horizontalArrangement = Arrangement.End,
-    modifier = Modifier
-      .fillMaxWidth()
-      .fillMaxHeight()
-  ) {
-    ButtonGroup(onCLick = { /*TODO*/ }, text = "Join")
-  }
-}
-
-@Composable
-fun ButtonGroup(onCLick: () -> Unit, text: String){
+fun ButtonGroup(onCLick: (String) -> Unit,code:String, text: String){
   Box(
     modifier = Modifier
       .fillMaxWidth()
@@ -190,7 +156,7 @@ fun ButtonGroup(onCLick: () -> Unit, text: String){
     contentAlignment = Alignment.CenterEnd
   ) {
     Button(
-      onClick = onCLick,
+      onClick = { onCLick(code) },
       colors = ButtonDefaults.buttonColors(
         containerColor = Color(0xFFCF6060)
       ),
@@ -222,4 +188,4 @@ fun playerList(characters: List<Player>?): String {
   }
   return text
 }
-
+*/
