@@ -8,7 +8,7 @@ data class Group(
     val description: String?= "",
     val size: String?= "",
     val characters: List<Player>?= emptyList(),
-    val requests: List<Player>?= emptyList(),
+    val requests: List<Request>?= emptyList(),
     val messages: List<Message>?= emptyList(),
 )
 
@@ -18,6 +18,14 @@ data class Master(
 )
 
 data class Player(
+    val idUsername: String?= "",
+    val username: String?= "",
+    val idCharacter: String?= "",
+    val character: String?= "",
+)
+
+data class Request(
+    val idRequest: String?= "",
     val idUsername: String?= "",
     val username: String?= "",
     val idCharacter: String?= "",

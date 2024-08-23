@@ -37,7 +37,7 @@ import com.example.parthfinder.theme.ParthFinderTheme
 import com.example.parthfinder.ui.screen.AccessScreen
 import com.example.parthfinder.ui.screen.CampainScreen
 import com.example.parthfinder.ui.screen.CharactersScreen
-import com.example.parthfinder.ui.screen.HomeScreen
+import com.example.parthfinder.ui.screen.Home
 
 class MainActivity : ComponentActivity() {
 
@@ -90,7 +90,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier
                                 .fillMaxWidth()
                         ) {
-                            composable(MainRoute.Home.name) { HomeScreen(groups) }
+                            composable(MainRoute.Home.name) { Home(groups,characters,access,applicationContext) }
                             composable(MainRoute.Characters.name) { CharactersScreen(applicationContext, characters, access) }
                             composable(MainRoute.Campains.name) { CampainScreen(applicationContext, groups, characters, access) }
                             composable(MainRoute.Login.name) { AccessScreen(access) }

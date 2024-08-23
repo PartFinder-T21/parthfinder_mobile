@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.parthfinder.api.AuthAPI
@@ -40,9 +41,9 @@ import com.example.parthfinder.repository.Master
 @Composable
 fun CampaignCardPlayer(group:Group, groups: Groups,access: AuthAPI,context: Context) {
     val scrollState = rememberScrollState();
-    var name by remember { mutableStateOf(group.name?:"Nome campagna")}
-    var description by remember { mutableStateOf(group.description?:"Descrizione campagna")}
-    var masterName by remember { mutableStateOf(group.master?.username?:"Master") }
+    val name by remember { mutableStateOf(group.name?:"Nome campagna")}
+    val description by remember { mutableStateOf(group.description?:"Descrizione campagna")}
+    val masterName by remember { mutableStateOf(group.master?.username?:"Master") }
     val id = group.id;
     val size = 5;
     Card(
@@ -113,6 +114,16 @@ fun CampaignCardPlayer(group:Group, groups: Groups,access: AuthAPI,context: Cont
                     Row(Modifier.padding(20.dp)) {
                         Text(text = "•", modifier = Modifier.padding(end = 8.dp))
                         Text(text = masterName, fontWeight = FontWeight.Bold)
+                    }
+                }
+                Column(
+                    Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "CODICE", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Row(Modifier.padding(20.dp)) {
+                        Text(text = group.groupCode!!, textDecoration = TextDecoration.Underline)
                     }
                 }
             }
