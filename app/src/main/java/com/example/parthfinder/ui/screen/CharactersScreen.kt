@@ -132,7 +132,7 @@ fun Character(character: PFCharacter, onClick: (PFCharacter) -> Unit) {
       modifier = Modifier.fillMaxSize()
     ) {
       Image(
-        bitmap = imageBitmapFrom(character.image),
+        bitmap = imageBitmapFrom(character.image, LocalContext.current),
         contentDescription = "Immagine personaggio",
         modifier = Modifier
           .clip(CircleShape)

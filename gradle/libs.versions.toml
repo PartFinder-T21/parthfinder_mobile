@@ -19,7 +19,6 @@ firebaseCrashlyticsBuildtools = "3.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-compose-bubble = { module = "com.github.SmartToolFactory:Compose-Bubble", version.ref = "composeBubble" }
 fuel = { module = "com.github.kittinunf.fuel:fuel", version.ref = "fuel" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 gson-v286 = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }

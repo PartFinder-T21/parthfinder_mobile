@@ -1,5 +1,6 @@
 package com.example.parthfinder.ui.screen
 
+import ChatScreen
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -32,6 +33,14 @@ import com.example.parthfinder.ui.component.SearchByCode
 fun CampainScreen(context: Context, groupsAPI: Groups,characterAPI: CharacterAPI, access: AuthAPI) {
     var groupList by remember { mutableStateOf(emptyList<Group>()) }
     val my_name = access.getCookiesFromSharedPreferences(context)["id"]
+    var onChat by remember { mutableStateOf(false) }
+    var selectedGroup by remember { mutableStateOf<Group?>(null) }
+
+
+    if(onChat && selectedGroup != null){
+        ChatScreen(code = selectedGroup!!.groupCode!! , id = selectedGroup!!.id!!, group = groupsAPI, authAPI = access) {onChat = false}
+        return
+    }
     groupsAPI.loadMyGroups(access, context).thenAccept {
         if (it != null) {
             groupList = it
@@ -41,7 +50,6 @@ fun CampainScreen(context: Context, groupsAPI: Groups,characterAPI: CharacterAPI
     val playerGroups = groupList.filter { a -> a.characters!!.any { player -> player.idUsername == my_name } }
 
     val scrollState = rememberScrollState()
-    var selectedGroup by remember { mutableStateOf<Group?>(null) }
     var newCampaignForm by remember { mutableStateOf(false) }
     var showSearchDialog by remember { mutableStateOf(false) }
     var masterSelected by remember { mutableStateOf(false) }
@@ -85,7 +93,8 @@ fun CampainScreen(context: Context, groupsAPI: Groups,characterAPI: CharacterAPI
                     groups = groupsAPI,
                     access = access,
                     onCardVisibilityChanged = { group -> selectedGroup = group; masterSelected  = !masterSelected;},
-                    isCardVisible = selectedGroup == gruppo && masterSelected,
+                    onChatVisibilityChanged = { group -> selectedGroup = group; onChat = true},
+                    isCardVisible = selectedGroup == gruppo && masterSelected
                 )
             }
         }
@@ -120,6 +129,7 @@ fun CampainScreen(context: Context, groupsAPI: Groups,characterAPI: CharacterAPI
                 groups = groupsAPI,
                 access = access,
                 onCardVisibilityChanged = { group -> selectedGroup = group; playerSelected = !playerSelected},
+                onChatVisibilityChanged = { group -> selectedGroup = group; onChat = true},
                 isCardVisible = selectedGroup == gruppo && playerSelected,
             )
         }
@@ -142,6 +152,7 @@ fun CampaignRow(
     groups: Groups,
     access: AuthAPI,
     onCardVisibilityChanged: (Group) -> Unit,
+    onChatVisibilityChanged: (Group) -> Unit,
     isCardVisible: Boolean,
 ) {
     Spacer(Modifier.padding(10.dp))
@@ -180,7 +191,9 @@ fun CampaignRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        onChatVisibilityChanged(gruppo)
+                    },
                     colors = ButtonDefaults.buttonColors(Color.Red)
                 ) {
                     Text(text = "Gioca", color = Color.White)

@@ -56,6 +56,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import com.example.parthfinder.R
 import com.example.parthfinder.api.CharacterAPI
 import com.example.parthfinder.mokk.mokkCharacter
 import com.example.parthfinder.repository.PFCharacter
@@ -110,14 +111,14 @@ fun CharacterSheet(characters: CharacterAPI, character: PFCharacter, context: Co
 @Composable
 fun CharacterSheetFrontSize(character: PFCharacter) {
   val encodedImage = Base64.decode(character.image, Base64.DEFAULT)
+  val context = LocalContext.current
   var imageBitmap by remember {
     mutableStateOf(
-      BitmapFactory.decodeByteArray(encodedImage, 0, encodedImage.size).asImageBitmap()
+      BitmapFactory.decodeByteArray(encodedImage, 0, encodedImage.size)?.asImageBitmap()?: BitmapFactory.decodeResource(context.resources, R.drawable.default_image).asImageBitmap()
     )
   }
   var name by remember { mutableStateOf(character.name) }
   var characterClass by remember { mutableStateOf(character.characterClass) }
-  val context = LocalContext.current
   val pickImage =
     rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
       uri?.let {
@@ -179,7 +180,7 @@ fun CharacterSheetFrontSize(character: PFCharacter) {
       ),
       singleLine = true
     )
-    StatsGrid(character.stats)
+    StatsGrid(character)
   }
 }
 
@@ -220,14 +221,14 @@ fun CharacterSheetBackSize(character: PFCharacter) {
 
 
 @Composable
-fun StatsGrid(stats: List<Stat>) {
+fun StatsGrid(character: PFCharacter) {
   val keyboardManager = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
   LazyVerticalGrid(
     columns = GridCells.Fixed(2),
     modifier = Modifier
   ) {
-    items(stats) {
+    items(character.stats) {
       Box(
         modifier = Modifier
           .fillMaxWidth(0.5f)
@@ -253,8 +254,11 @@ fun StatBlock(stat: Stat) {
     TextField(
       value = value.toString(),
       onValueChange = { number ->
-        if(number == "") {value = 0}
+        if(number == "") {
+          value = 0
+        }
         else { value = number.toInt()}
+        stat.value = value
       },
       keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
       modifier = Modifier

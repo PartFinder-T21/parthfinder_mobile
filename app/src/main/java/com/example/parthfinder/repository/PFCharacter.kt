@@ -6,7 +6,9 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import com.example.parthfinder.R
+import com.google.gson.annotations.SerializedName
 import java.io.ByteArrayOutputStream
 
 data class PFCharacter(
@@ -16,6 +18,7 @@ data class PFCharacter(
   var name: String,
   val stats: List<Stat>,
   var inventory: List<String>,
+  @SerializedName("class")
   var characterClass: String,
 ){
   companion object{
@@ -61,9 +64,9 @@ fun base64FromUri(context: Context, uri: Uri): String {
   return imageString
 }
 
-fun imageFrombase64(imageString: String): Bitmap {
+fun imageFrombase64(imageString: String, context: Context): Bitmap {
   val imageBytes = Base64.decode(imageString, Base64.DEFAULT)
-  return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+  return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?: BitmapFactory.decodeResource(context.resources, R.drawable.default_image)
 }
 
 fun uriToImageBitmap(context: Context, uri: Uri): Bitmap {

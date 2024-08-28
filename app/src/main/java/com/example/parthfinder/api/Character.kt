@@ -51,6 +51,8 @@ class CharacterAPI(private val baseUrl: String, private val access: AuthAPI): Ch
     val cookies = access.getCookiesFromSharedPreferences(context);
     val characterBody = toJson(character)
 
+    Log.i("Character", toJson(character.copy(image = "")))
+
     return CompletableFuture
       .supplyAsync{
         Fuel.put("${baseUrl}/character")

@@ -1,5 +1,9 @@
 import android.content.Context
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,42 +24,47 @@ import androidx.compose.ui.unit.dp
 import java.time.LocalDateTime
 
 @Composable
-fun MessageBubble(sender: String, message: String, timestamp: LocalDateTime, context: Context) {
-  val self = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).getString("name", null)
+fun MessageBubble(sender: String, message: String, self: String) {
+
 
   var color by remember { mutableStateOf(Color.Gray) }
   var arrangement by remember { mutableStateOf(Arrangement.Start) }
-  var startCorner by remember { mutableStateOf(0.dp) }
-  var endCorner by remember { mutableStateOf(48.dp) }
+  var startCorner by remember { mutableStateOf(0f) }
+  var endCorner by remember { mutableStateOf(48f) }
 
   if (sender == self) {
-    color = Color.Blue
+    color = Color.Cyan
     arrangement = Arrangement.End
-    startCorner = 48.dp
-    endCorner = 0.dp
+    startCorner = 48f
+    endCorner = 0f
   }
 
   Row(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(5.dp),
     horizontalArrangement = arrangement
   ) {
-    Card(
-      colors = CardDefaults.cardColors(containerColor = color),
+    Box(
       modifier = Modifier
         .clip(
           RoundedCornerShape(
-            topStart = 48.dp,
-            topEnd = 48.dp,
-            bottomStart = startCorner,
-            bottomEnd = endCorner
+            topStart = 48f,
+            topEnd = 48f,
+            bottomEnd = endCorner,
+            bottomStart = startCorner
           )
         )
+        .background(color)
+        .padding(10.dp)
 
     ) {
-      if (sender != self) {
-        Text(text = sender, modifier = Modifier.padding(8.dp))
+      Column {
+        if (sender != self) {
+          Text(text = sender, modifier = Modifier.padding(8.dp))
+        }
+        Text(text = message, modifier = Modifier.padding(8.dp))
       }
-      Text(text = message, modifier = Modifier.padding(8.dp))
     }
   }
 }

@@ -39,11 +39,14 @@ class Groups(
           }
           .body().asString("application/json; charset=UTF-8")
           .let {
-            Log.i("GroupLoad", "Got ${JsonParser.parseString(it).asJsonObject.get("data").asJsonArray.size()} groups")
-            if (it == "[]") return@supplyAsync null
-
-            Log.i("GroupLoad", "Gruppi ${JsonParser.parseString(it).asJsonObject.get("data").asJsonArray.map { mapGroup(it.asJsonObject) }}")
-            JsonParser.parseString(it).asJsonObject.get("data").asJsonArray.map { mapGroup(it.asJsonObject) }
+            val json = if(JsonParser.parseString(it).asJsonObject.get("data").isJsonObject){
+              val jsonString = JsonParser.parseString(it).asJsonObject
+              listOf(mapGroup(jsonString.asJsonObject))
+            } else {
+              JsonParser.parseString(it).asJsonObject.get("data").asJsonArray.map { mapGroup(it.asJsonObject) }
+            }
+            Log.i("GroupLoad", "Gruppi $json")
+            json
           }
       }
   }*/
@@ -60,6 +63,7 @@ class Groups(
         .join()
 
       Log.i("GroupLoad", "Received response. Status code is ${response.statusCode}")
+
       if (response.statusCode != 200) return@supplyAsync emptyList<Group>()
 
       val responseBody = response.body().asString("application/json; charset=UTF-8")
@@ -67,6 +71,7 @@ class Groups(
 
       // Verifica che l'elemento "data" esista e sia valido
       val dataElement = jsonResponse.get("data")
+      Log.i("GroupLoad", "Received response. Body is ${dataElement}")
       if (dataElement == null) {
         Log.e("GroupLoad", "Data element is null")
         return@supplyAsync emptyList<Group>()
@@ -286,6 +291,57 @@ class Groups(
       }
   }
 
+  fun loadChatBy(code: String, access:AuthAPI,context: Context): CompletableFuture<List<Message>> {
+    val cookies = access.getCookiesFromSharedPreferences(context);
+    return CompletableFuture
+      .supplyAsync{
+        Log.i("MyGroupLoad", "Starting to retretive chat from $baseUrl/group/chat/${code}")
+        Fuel.get("${baseUrl}/group/chat/${code}")
+          .header(Headers.CONTENT_TYPE, "application/json")
+          .header(Headers.COOKIE, "tk=${cookies["tk"]}")
+          .response { _ -> Unit}
+          .join()
+          .let { response ->
+            Log.i("MyGroupLoad", "Received response. Status code is ${response.statusCode}")
+            if (response.statusCode != 200) return@supplyAsync null
+            response
+          }
+          .body().asString("application/json; charset=UTF-8")
+          .let {
+            Log.i("MyGroupLoad", "Got ${JsonParser.parseString(it).asJsonArray.size()} groups")
+            if (it == "[]") return@supplyAsync emptyList()
+
+            Log.i("MyGroupLoad", "Messaggi ${JsonParser.parseString(it).asJsonArray.map { mapJsonToMessage(it.asJsonObject) }}")
+            JsonParser.parseString(it).asJsonArray.map { mapJsonToMessage(it.asJsonObject) }
+          }
+      }
+  }
+
+  fun sendMessageTo(id: String, message: String, access:AuthAPI, context: Context): CompletableFuture<Unit> {
+    val cookies = access.getCookiesFromSharedPreferences(context);
+
+    val jsonBody = JSONObject();
+    jsonBody.put("id", id);
+    jsonBody.put("message", message)
+    Log.i("Request",jsonBody.toString())
+
+    return CompletableFuture
+      .supplyAsync{
+        Fuel.put("${baseUrl}/group/chat")
+          .header(Headers.CONTENT_TYPE, "application/json")
+          .header(Headers.COOKIE, "tk=${cookies["tk"]}")
+          .body(jsonBody.toString())
+          .response { _ -> }
+          .join()
+          .let { response ->
+            Log.i("Request", "Received response. Response is $response")
+            if (response.statusCode != 200) return@supplyAsync Unit
+            response
+          }
+          .body().asString("application/json; charset=UTF-8")
+      }
+  }
+
 
   fun mapGroup(json: JsonObject): Group {
     return Group(
@@ -329,8 +385,8 @@ class Groups(
 
   fun mapJsonToMessage(json: JsonObject): Message {
     return Message(
-      username = json.get("user").asString?: null,
-      isMaster = json.get("character").asBoolean,
+      username = json.get("username")?.asString?: "Master",
+      isMaster = json.get("isMaster").asBoolean,
       message = json.get("message").asString?: null
     )
   }
